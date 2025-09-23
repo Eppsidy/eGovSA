@@ -45,6 +45,71 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+const copyDirectory = async (src, dest) => {
+  await fs.promises.mkdir(dest, { recursive: true });
+  const entries = await fs.promises.readdir(src, { withFileTypes: true });
+  
+  for (let entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    
+    if (entry.isDirectory()) {
+      await copyDirectory(srcPath, destPath);
+    } else {
+      await fs.promises.copyFile(srcPath, destPath);
+    }
+  }
+};
+
+const deleteDirectoryWithRetry = async (dirPath, maxRetries = 3) => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      await fs.promises.rm(dirPath, { recursive: true, force: true });
+      return true;
+    } catch (error) {
+      if (i === maxRetries - 1) {
+        console.log(`⚠️ Could not delete ${dirPath}: ${error.message}`);
+        console.log(`Please manually delete this directory when possible.`);
+        return false;
+      }
+      // Wait a bit before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+};
+
+const moveDirectoryWithFallback = async (oldDirPath, newDirPath, dirName) => {
+  try {
+    // Try the fast rename first
+    await fs.promises.rename(oldDirPath, newDirPath);
+    console.log(`➡️ /${dirName} moved to /${exampleDir}/${dirName}.`);
+    return true;
+  } catch (error) {
+    if (error.code === 'EPERM' || error.code === 'EBUSY' || error.code === 'ENOTEMPTY') {
+      console.log(`⚠️ Direct move failed for /${dirName}, trying copy and delete method...`);
+      try {
+        // Fallback: copy then delete
+        await copyDirectory(oldDirPath, newDirPath);
+        console.log(`📁 /${dirName} copied to /${exampleDir}/${dirName}.`);
+        
+        const deleted = await deleteDirectoryWithRetry(oldDirPath);
+        if (deleted) {
+          console.log(`➡️ /${dirName} successfully moved to /${exampleDir}/${dirName}.`);
+        } else {
+          console.log(`📁 /${dirName} copied to /${exampleDir}/${dirName} (original may need manual deletion).`);
+        }
+        return true;
+      } catch (copyError) {
+        console.log(`❌ Failed to copy /${dirName}: ${copyError.message}`);
+        return false;
+      }
+    } else {
+      console.log(`❌ Failed to move /${dirName}: ${error.message}`);
+      return false;
+    }
+  }
+};
+
 const moveDirectories = async (userInput) => {
   try {
     if (userInput === "y") {
@@ -59,11 +124,12 @@ const moveDirectories = async (userInput) => {
       if (fs.existsSync(oldDirPath)) {
         if (userInput === "y") {
           const newDirPath = path.join(root, exampleDir, dir);
-          await fs.promises.rename(oldDirPath, newDirPath);
-          console.log(`➡️ /${dir} moved to /${exampleDir}/${dir}.`);
+          await moveDirectoryWithFallback(oldDirPath, newDirPath, dir);
         } else {
-          await fs.promises.rm(oldDirPath, { recursive: true, force: true });
-          console.log(`❌ /${dir} deleted.`);
+          const deleted = await deleteDirectoryWithRetry(oldDirPath);
+          if (deleted) {
+            console.log(`❌ /${dir} deleted.`);
+          }
         }
       } else {
         console.log(`➡️ /${dir} does not exist, skipping.`);
