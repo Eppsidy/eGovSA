@@ -10,7 +10,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Set up environment variables
+
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Then edit `.env` and add your Supabase project URL and API key.
+
+3. Start the app
 
    ```bash
    npx expo start
