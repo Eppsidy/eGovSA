@@ -12,6 +12,7 @@ export interface UserProfile {
   created_at: string
 }
 
+
 interface AuthContextType {
   session: Session | null
   user: UserProfile | null

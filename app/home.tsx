@@ -1,14 +1,24 @@
+import { useRouter } from 'expo-router'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../src/contexts/AuthContext'
 
 export default function HomeScreen() {
   const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } finally {
+      router.replace('/pin-login')
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>Welcome{user?.first_name ? `, ${user.first_name}` : ''} 👋</Text>
       <Text style={styles.subtitle}>This is a placeholder Home Screen.</Text>
-      <TouchableOpacity style={styles.button} onPress={signOut}>
+      <TouchableOpacity style={styles.button} onPress={handleSignOut}>
         <Text style={styles.buttonText}>Sign Out</Text>
       </TouchableOpacity>
     </View>

@@ -27,7 +27,7 @@ export default function RegistrationScreen() {
         <TouchableOpacity style={[styles.button, (!firstName||!lastName||!email)&&styles.buttonDisabled]} onPress={handleNext} disabled={loading||!firstName||!lastName||!email}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-        <Text style={styles.progressText}>Step 1 of 5</Text>
+  <Text style={styles.progressText}>Step 1 of 4</Text>
       </View>
     </KeyboardAvoidingView>
   )

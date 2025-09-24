@@ -7,7 +7,7 @@ import { supabase } from '../src/lib/supabase'
 
 export default function PinSetupScreen() {
   const router = useRouter()
-  const { email, firstName, lastName, phone } = useLocalSearchParams<{ email:string; firstName:string; lastName:string; phone:string }>()
+  const { email, firstName, lastName } = useLocalSearchParams<{ email:string; firstName:string; lastName:string }>()
   const [pin, setPin] = useState(['', '', '', ''])
   const [confirmPin, setConfirmPin] = useState(['', '', '', ''])
   const [step, setStep] = useState<1|2>(1)
@@ -51,25 +51,11 @@ export default function PinSetupScreen() {
       }
       
       console.log('Attempting to save user profile for user ID:', userData.user.id);
-      console.log('Profile data:', { 
-        id: userData.user.id, 
-        first_name: firstName, 
-        last_name: lastName, 
-        email, 
-        phone 
-      });
+      console.log('Profile data:', { id: userData.user.id, first_name: firstName, last_name: lastName, email });
       
       const { data: upsertData, error } = await supabase
         .from('profiles')
-        .upsert({
-          id: userData.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          full_name: `${firstName ?? ''} ${lastName ?? ''}`.trim(),
-          email,
-          phone,
-          pin: hashed,
-        })
+        .upsert({ id: userData.user.id, first_name: firstName, last_name: lastName, full_name: `${firstName ?? ''} ${lastName ?? ''}`.trim(), email, pin: hashed })
         .select()
         .maybeSingle();
       
@@ -84,7 +70,7 @@ export default function PinSetupScreen() {
       }
       console.log('Profile upsert success:', upsertData);
       
-      updateUserProfile({ first_name: firstName, last_name: lastName, email, phone }); 
+  updateUserProfile({ first_name: firstName, last_name: lastName, email }); 
       router.replace('/home') 
     } catch(e:any){ 
       console.error('Full error details:', e);
@@ -96,8 +82,8 @@ export default function PinSetupScreen() {
   const renderPinInputs = (confirm=false) => { const arr = confirm? confirmPin : pin; return (<View style={styles.pinRow}>{arr.map((d,i)=>(<TextInput key={i} ref={el=>{ if(confirm){ confirmInputs.current[i]=el } else { inputs.current[i]=el } }} style={styles.pinInput} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i,confirm)} />))}</View>) }
   return (
     <View style={styles.container}>
-      {step===1 && (<><Text style={styles.title}>Create App PIN</Text><Text style={styles.subtitle}>Set a 4-digit PIN to secure quick access</Text>{renderPinInputs(false)}<TouchableOpacity style={[styles.button, pinsToString(pin).length!==4 && styles.buttonDisabled]} disabled={pinsToString(pin).length!==4} onPress={handleNext}><Text style={styles.buttonText}>Continue</Text></TouchableOpacity><Text style={styles.progressText}>Step 4 of 5</Text></>) }
-      {step===2 && (<><Text style={styles.title}>Confirm PIN</Text><Text style={styles.subtitle}>Re-enter your PIN</Text>{renderPinInputs(true)}<TouchableOpacity style={[styles.button, (pinsToString(confirmPin).length!==4||saving)&&styles.buttonDisabled]} disabled={pinsToString(confirmPin).length!==4||saving} onPress={saveAll}><Text style={styles.buttonText}>{saving? 'Saving...' : 'Finish'}</Text></TouchableOpacity><Text style={styles.progressText}>Step 5 of 5</Text></>) }
+  {step===1 && (<><Text style={styles.title}>Create App PIN</Text><Text style={styles.subtitle}>Set a 4-digit PIN to secure quick access</Text>{renderPinInputs(false)}<TouchableOpacity style={[styles.button, pinsToString(pin).length!==4 && styles.buttonDisabled]} disabled={pinsToString(pin).length!==4} onPress={handleNext}><Text style={styles.buttonText}>Continue</Text></TouchableOpacity><Text style={styles.progressText}>Step 3 of 4</Text></>) }
+  {step===2 && (<><Text style={styles.title}>Confirm PIN</Text><Text style={styles.subtitle}>Re-enter your PIN</Text>{renderPinInputs(true)}<TouchableOpacity style={[styles.button, (pinsToString(confirmPin).length!==4||saving)&&styles.buttonDisabled]} disabled={pinsToString(confirmPin).length!==4||saving} onPress={saveAll}><Text style={styles.buttonText}>{saving? 'Saving...' : 'Finish'}</Text></TouchableOpacity><Text style={styles.progressText}>Step 4 of 4</Text></>) }
     </View>
   )
 }
