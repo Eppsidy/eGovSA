@@ -27,6 +27,9 @@ export default function RegistrationScreen() {
         <TouchableOpacity style={[styles.button, (!firstName||!lastName||!email)&&styles.buttonDisabled]} onPress={handleNext} disabled={loading||!firstName||!lastName||!email}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push(email ? `/pin-login?email=${encodeURIComponent(email)}` : '/pin-login')} style={styles.linkContainer}>
+          <Text style={styles.linkText}>Already have an account? Login</Text>
+        </TouchableOpacity>
   <Text style={styles.progressText}>Step 1 of 4</Text>
       </View>
     </KeyboardAvoidingView>
@@ -43,5 +46,7 @@ const styles = StyleSheet.create({
   button:{ backgroundColor:'#0066CC',paddingVertical:16,borderRadius:12,alignItems:'center',marginTop:10,shadowColor:'#0066CC',shadowOffset:{width:0,height:4},shadowOpacity:0.3,shadowRadius:8,elevation:6},
   buttonDisabled:{ backgroundColor:'#A0C8E8'},
   buttonText:{ color:'#FFFFFF',fontSize:18,fontWeight:'600'},
+  linkContainer:{ marginTop:16, alignItems:'center' },
+  linkText:{ color:'#0066CC', fontSize:14, fontWeight:'500' },
   progressText:{ textAlign:'center',marginTop:24,color:'#999',fontSize:12},
 })

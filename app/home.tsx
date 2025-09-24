@@ -11,7 +11,12 @@ export default function HomeScreen() {
     try {
       await signOut()
     } finally {
-      router.replace('/pin-login')
+      const email = user?.email
+      if (email) {
+        router.replace(`/pin-login?email=${encodeURIComponent(email)}`)
+      } else {
+        router.replace('/pin-login')
+      }
     }
   }
   return (
