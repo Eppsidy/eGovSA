@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: '#444' },
   input: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 10, padding: 14, fontSize: 16, backgroundColor: '#FAFAFA' },
   button: { backgroundColor: '#de6c0fff', paddingVertical: 16, borderRadius: 12, alignItems: 'center', marginTop: 10, shadowColor: '#de6c0fff', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
-  buttonDisabled: { backgroundColor: '#A0C8E8' },
+  buttonDisabled: { backgroundColor: '#fba158ff' },
   buttonText: { color: '#FFF', fontSize: 18, fontWeight: '600' },
   codeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginBottom: 16 },
   codeInput: { width: 50, height: 60, borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 10, textAlign: 'center', fontSize: 24, backgroundColor: '#FAFAFA' },

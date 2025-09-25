@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   pinRow:{ flexDirection:'row', justifyContent:'space-between', marginBottom:32 },
   pinInput:{ width:60, height:70, borderWidth:1, borderColor:'#E0E0E0', borderRadius:14, textAlign:'center', fontSize:30, backgroundColor:'#FAFAFA' },
   button:{ backgroundColor:'#de6c0fff', paddingVertical:16, borderRadius:12, alignItems:'center', shadowColor:'#de6c0fff', shadowOffset:{ width:0, height:4 }, shadowOpacity:0.3, shadowRadius:8, elevation:6 },
-  buttonDisabled:{ backgroundColor:'#A0C8E8' },
+  buttonDisabled:{ backgroundColor:'#fba158ff' },
   buttonText:{ color:'#FFF', fontSize:18, fontWeight:'600' },
   progressText:{ textAlign:'center', marginTop:32, color:'#999', fontSize:12 },
 })
