@@ -67,6 +67,47 @@ create policy "Users can update own profile" on public.profiles
 grant usage on schema public to anon, authenticated;
 grant select, insert, update, delete on public.profiles to anon, authenticated;
 
+-- 7) Helper function: email_exists for login pre-checks (SECURITY DEFINER to bypass RLS safely)
+create or replace function public.email_exists(p_email text)
+returns boolean
+language plpgsql
+security definer
+as $$
+declare
+  exists_bool boolean;
+begin
+  select exists (
+    select 1 from public.profiles where lower(email) = lower(p_email) limit 1
+  ) into exists_bool;
+  return exists_bool;
+end;
+$$;
+
+revoke all on function public.email_exists(text) from public;
+grant execute on function public.email_exists(text) to anon, authenticated;
+
+-- 7b) Helper function: verify_pin checks if hashed PIN matches for the email
+create or replace function public.verify_pin(p_email text, p_pin_hash text)
+returns boolean
+language plpgsql
+security definer
+as $$
+declare
+  is_match boolean;
+begin
+  select exists (
+    select 1 from public.profiles
+    where lower(email) = lower(p_email)
+      and pin = p_pin_hash
+    limit 1
+  ) into is_match;
+  return is_match;
+end;
+$$;
+
+revoke all on function public.verify_pin(text, text) from public;
+grant execute on function public.verify_pin(text, text) to anon, authenticated;
+
 -- 7) Optional: backfill full_name from first/last where empty
 update public.profiles
 set full_name = coalesce(full_name, trim(concat_ws(' ', first_name, last_name)))
