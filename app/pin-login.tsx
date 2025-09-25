@@ -1,7 +1,9 @@
+import * as Crypto from 'expo-crypto'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../src/contexts/AuthContext'
+import { supabase } from '../src/lib/supabase'
 
 export default function PinLoginScreen() {
   const [pin, setPin] = useState(['', '', '', ''])
@@ -10,7 +12,42 @@ export default function PinLoginScreen() {
   const router = useRouter()
   const { email } = useLocalSearchParams<{ email?: string }>()
   const handleChange = (val:string, idx:number) => { const arr=[...pin]; arr[idx]=val.replace(/\D/g,'').slice(-1); setPin(arr); if(arr[idx] && idx<3) inputs.current[idx+1]?.focus() }
-  const submit = async () => { const entered = pin.join(''); if(entered.length!==4) return; const ok = await verifyPin(entered); if (ok) { router.replace('/home') } else { Alert.alert('Incorrect PIN','Please try again'); setPin(['','','','']); inputs.current[0]?.focus() } }
+  const submit = async () => {
+    const entered = pin.join('')
+    if (entered.length !== 4) return
+    try {
+      if (email) {
+        // Hash the PIN and verify against database
+        const hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, entered)
+        const { data, error } = await supabase.rpc('verify_pin', { p_email: String(email), p_pin_hash: hash })
+        if (error) {
+          console.error('verify_pin RPC error:', error)
+          Alert.alert('Login error', 'Unable to verify your PIN at the moment. Please try again.')
+          return
+        }
+        if (data === true) {
+          router.replace('/home')
+        } else {
+          Alert.alert('Incorrect PIN', 'Please try again')
+          setPin(['', '', '', ''])
+          inputs.current[0]?.focus()
+        }
+      } else {
+        // Fallback to local verification when email context is missing
+        const ok = await verifyPin(entered)
+        if (ok) {
+          router.replace('/home')
+        } else {
+          Alert.alert('Incorrect PIN', 'Please try again')
+          setPin(['', '', '', ''])
+          inputs.current[0]?.focus()
+        }
+      }
+    } catch (e) {
+      console.error('PIN submit error:', e)
+      Alert.alert('Error', 'Something went wrong while verifying your PIN')
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Enter PIN</Text>
@@ -20,7 +57,7 @@ export default function PinLoginScreen() {
       <TouchableOpacity onPress={() => email ? router.push({ pathname: '/pin-recover', params: { email: String(email) } }) : router.push('/pin-recover')}>
         <Text style={styles.helpText}>Forgot PIN?</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/get-started')}>
+      <TouchableOpacity onPress={() => router.push('/registration')}>
         <Text style={[styles.helpText, { marginTop: 12 }]}>Create new account</Text>
       </TouchableOpacity>
     </View>

@@ -27,7 +27,7 @@ export default function RegistrationScreen() {
         <TouchableOpacity style={[styles.button, (!firstName||!lastName||!email)&&styles.buttonDisabled]} onPress={handleNext} disabled={loading||!firstName||!lastName||!email}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push(email ? `/pin-login?email=${encodeURIComponent(email)}` : '/pin-login')} style={styles.linkContainer}>
+        <TouchableOpacity onPress={() => router.push('/login-email')} style={styles.linkContainer}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
   <Text style={styles.progressText}>Step 1 of 4</Text>
