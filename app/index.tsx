@@ -44,7 +44,7 @@ export default function Index() {
         </View>
       </View>
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0066CC" />
+        <ActivityIndicator size="large" color="#de6c0fff" />
         <Text style={styles.loadingText}>{loading || !hasChecked ? 'Loading...' : 'Starting...'}</Text>
       </View>
       <View style={styles.footer}>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   logoContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   logoPlaceholder: { alignItems: 'center', padding: 20 },
   logoImage: { width: Math.min(Dimensions.get('window').width * 0.55, 260), height: Math.min(Dimensions.get('window').width * 0.55, 260), marginBottom: 12 },
-  appName: { fontSize: 32, fontWeight: 'bold', color: '#0066CC', letterSpacing: 1 },
+  appName: { fontSize: 32, fontWeight: 'bold', color: '#de6c0fff', letterSpacing: 1 },
   tagline: { marginTop: 4, fontSize: 14, color: '#555', letterSpacing: 0.5 },
   loadingContainer: { alignItems: 'center', marginBottom: 40 },
   loadingText: { fontSize: 16, color: '#666', marginTop: 12 },

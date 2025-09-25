@@ -43,10 +43,10 @@ const styles = StyleSheet.create({
   formGroup:{ marginBottom:20},
   label:{ fontSize:14,fontWeight:'500',marginBottom:8,color:'#444'},
   input:{ borderWidth:1,borderColor:'#E0E0E0',borderRadius:10,padding:14,fontSize:16,backgroundColor:'#FAFAFA'},
-  button:{ backgroundColor:'#0066CC',paddingVertical:16,borderRadius:12,alignItems:'center',marginTop:10,shadowColor:'#0066CC',shadowOffset:{width:0,height:4},shadowOpacity:0.3,shadowRadius:8,elevation:6},
-  buttonDisabled:{ backgroundColor:'#A0C8E8'},
+  button:{ backgroundColor:'#de6c0fff',paddingVertical:16,borderRadius:12,alignItems:'center',marginTop:10,shadowColor:'#de6c0fff',shadowOffset:{width:0,height:4},shadowOpacity:0.3,shadowRadius:8,elevation:6},
+  buttonDisabled:{ backgroundColor:'#f2bb8fff'},
   buttonText:{ color:'#FFFFFF',fontSize:18,fontWeight:'600'},
   linkContainer:{ marginTop:16, alignItems:'center' },
-  linkText:{ color:'#0066CC', fontSize:14, fontWeight:'500' },
+  linkText:{ color:'#de6c0fff', fontSize:14, fontWeight:'500' },
   progressText:{ textAlign:'center',marginTop:24,color:'#999',fontSize:12},
 })
