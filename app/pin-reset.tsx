@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: '#666', marginBottom: 16 },
   pinRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   pinInput: { width: 60, height: 70, borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 14, textAlign: 'center', fontSize: 30, backgroundColor: '#FAFAFA' },
-  button: { backgroundColor: '#0066CC', paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#0066CC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+  button: { backgroundColor: '#de6c0fff', paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#de6c0fff', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
   buttonDisabled: { backgroundColor: '#A0C8E8' },
   buttonText: { color: '#FFF', fontSize: 18, fontWeight: '600' },
 })
