@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import React from 'react'
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../src/contexts/AuthContext'
 
 export default function HomeScreen() {
@@ -64,8 +66,10 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.page}>
-      {/* Header */}
-      <View style={styles.headerBar}>
+      {/* Header + safe top inset */}
+      <SafeAreaView edges={['top']} style={styles.safeTop}>
+        <StatusBar style="dark" />
+        <View style={styles.headerBar}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View style={styles.logoCircle}>
             <Text style={styles.logoText}>SA</Text>
@@ -75,12 +79,12 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Government Services</Text>
           </View>
         </View>
-
-  <TouchableOpacity onPress={() => router.push('/notifications' as any)} style={styles.bellWrap}>
-          <Ionicons name="notifications-outline" size={22} color="#222" />
-          <View style={styles.badge}><Text style={styles.badgeText}>2</Text></View>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={() => router.push('/notifications' as any)} style={styles.bellWrap}>
+            <Ionicons name="notifications-outline" size={22} color="#222" />
+            <View style={styles.badge}><Text style={styles.badgeText}>2</Text></View>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Welcome banner */}
@@ -126,8 +130,15 @@ export default function HomeScreen() {
         {/* Contacts */}
         <Text style={styles.sectionTitle}>Contacts</Text>
         {contacts.map((c) => (
-          <View key={c.id} style={styles.contactCard}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Pressable
+            key={c.id}
+            style={styles.contactCard}
+            onPress={() => {
+              const tel = `tel:${c.phone.replace(/\s+/g, '')}`
+              Linking.openURL(tel)
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
               <View style={styles.contactIcon}><Ionicons name="call-outline" size={18} color="#2F80ED" /></View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.contactName}>{c.name}</Text>
@@ -135,16 +146,10 @@ export default function HomeScreen() {
                 <Text style={styles.contactPhone}>{c.phone}</Text>
               </View>
             </View>
-            <TouchableOpacity
-              style={styles.callBtn}
-              onPress={() => {
-                const tel = `tel:${c.phone.replace(/\s+/g, '')}`
-                Linking.openURL(tel)
-              }}
-            >
+            <View style={styles.callBtn}>
               <Text style={styles.callBtnText}>Call</Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>
@@ -161,7 +166,8 @@ const cardShadow = {
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#f6f8fb' },
-  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10, backgroundColor: '#fff', ...cardShadow },
+  safeTop: { backgroundColor: '#fff' },
+  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, backgroundColor: '#fff', ...cardShadow },
   logoCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#2F80ED22', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   logoText: { fontSize: 12, fontWeight: '700', color: '#2F80ED' },
   appName: { fontSize: 16, fontWeight: '700', color: '#222' },
