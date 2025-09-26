@@ -1,10 +1,10 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-export default function NewsScreen() {
+export default function ApplicationsScreen() {
   return (
     <View style={styles.page}>
-      <Text style={styles.text}>Latest government news and updates.</Text>
+      <Text style={styles.text}>Applications will appear here.</Text>
     </View>
   )
 }
