@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: { marginTop: 10, marginHorizontal: 16, marginBottom: 10, fontSize: 14, fontWeight: '700', color: '#222' },
   rowBetween: { marginHorizontal: 16, marginTop: 10, marginBottom: 6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  viewAll: { color: '#0a7ea4', fontWeight: '600' },
+  viewAll: { color: '#de6c0fff', fontWeight: '600' },
 
   servicesGrid: { flexDirection: 'row', gap: 12, paddingHorizontal: 16 },
   serviceCard: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center', ...cardShadow },
