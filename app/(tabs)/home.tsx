@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
 import React from 'react'
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
 
 export default function HomeScreen() {
@@ -66,25 +65,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.page}>
-      {/* Header + safe top inset */}
-      <SafeAreaView edges={['top']} style={styles.safeTop}>
-        <StatusBar style="dark" />
-        <View style={styles.headerBar}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoText}>SA</Text>
-          </View>
-          <View>
-            <Text style={styles.appName}>eGov SA</Text>
-            <Text style={styles.subtitle}>Government Services</Text>
-          </View>
-        </View>
-          <TouchableOpacity onPress={() => router.push('/notifications' as any)} style={styles.bellWrap}>
-            <Ionicons name="notifications-outline" size={22} color="#222" />
-            <View style={styles.badge}><Text style={styles.badgeText}>2</Text></View>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <Header onPressBell={() => router.push('/notifications' as any)} />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Welcome banner */}
@@ -166,15 +147,7 @@ const cardShadow = {
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#f6f8fb' },
-  safeTop: { backgroundColor: '#fff' },
-  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, backgroundColor: '#fff', ...cardShadow },
-  logoCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#2F80ED22', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-  logoText: { fontSize: 12, fontWeight: '700', color: '#2F80ED' },
-  appName: { fontSize: 16, fontWeight: '700', color: '#222' },
-  subtitle: { fontSize: 11, color: '#667085' },
-  bellWrap: { position: 'relative', padding: 6 },
-  badge: { position: 'absolute', right: 0, top: -2, backgroundColor: '#E11D48', minWidth: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+  // header styles removed (now provided by shared Header component)
 
   welcomeCard: { margin: 16, padding: 16, backgroundColor: '#0a7ea4', borderRadius: 14, flexDirection: 'row', alignItems: 'center', gap: 12, ...cardShadow },
   avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0a7ea4aa', alignItems: 'center', justifyContent: 'center' },

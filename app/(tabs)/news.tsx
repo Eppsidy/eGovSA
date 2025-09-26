@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Header from '../../src/components/Header';
 
 type Article = {
   title: string;
@@ -73,7 +74,9 @@ export default function NewsScreen() {
 
   return (
     <View style={styles.page}>
-      <Text style={styles.header}>Latest government news and updates</Text>
+      <Header />
+      <View style={styles.content}>
+        <Text style={styles.header}>Latest government news and updates</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
@@ -88,12 +91,14 @@ export default function NewsScreen() {
           ListEmptyComponent={<Text style={styles.empty}>No headlines available.</Text>}
         />
       )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  page: { flex: 1, backgroundColor: '#fff' },
+  content: { flex: 1, padding: 16 },
   header: { color: '#111', fontWeight: '600', fontSize: 18, marginBottom: 12 },
   item: { paddingVertical: 12, borderBottomWidth: 1, borderColor: '#eee' },
   title: { fontSize: 16, color: '#111', fontWeight: '500' },
