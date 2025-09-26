@@ -5,7 +5,10 @@ import { AuthProvider } from '../src/contexts/AuthContext'
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      {/* Root-level stack that renders a tabs navigator as the index route */}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
     </AuthProvider>
   )
 }
