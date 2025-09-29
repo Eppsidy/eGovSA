@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 type HeaderProps = {
@@ -31,12 +30,7 @@ export default function Header({
           </View>
         </View>
 
-        <TouchableOpacity onPress={onPressBell} style={styles.bellWrap} accessibilityRole="button" accessibilityLabel="Notifications">
-          <Ionicons name="notifications-outline" size={22} color="#222" />
-          {badgeCount > 0 ? (
-            <View style={styles.badge}><Text style={styles.badgeText}>{badgeCount}</Text></View>
-          ) : null}
-        </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   )
@@ -57,7 +51,5 @@ const styles = StyleSheet.create({
   logoText: { fontSize: 12, fontWeight: '700', color: '#2F80ED' },
   appName: { fontSize: 16, fontWeight: '700', color: '#222' },
   subtitle: { fontSize: 11, color: '#667085' },
-  bellWrap: { position: 'relative', padding: 6 },
-  badge: { position: 'absolute', right: 0, top: -2, backgroundColor: '#E11D48', minWidth: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+
 })
