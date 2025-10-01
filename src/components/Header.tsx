@@ -6,15 +6,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 type HeaderProps = {
   title?: string
   subtitle?: string
-  badgeCount?: number
-  onPressBell?: () => void
 }
 
 export default function Header({
   title = 'eGov SA',
   subtitle = 'Government Services',
-  badgeCount = 2,
-  onPressBell,
 }: HeaderProps) {
   return (
     <SafeAreaView edges={['top']} style={styles.safeTop}>

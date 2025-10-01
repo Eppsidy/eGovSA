@@ -65,7 +65,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.page}>
-      <Header onPressBell={() => router.push('/notifications' as any)} />
+      <Header/>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Welcome banner */}
