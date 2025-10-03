@@ -11,7 +11,7 @@ export default function GetStartedScreen() {
           <Text style={styles.welcomeText}>Welcome to</Text>
           <Text style={styles.appTitle}>eGovSA</Text>
           <Image
-                      source={require('../assets/images/j-G6PUes.jpg')}
+                      source={require('../../assets/images/j-G6PUes.jpg')}
                       resizeMode="contain"
                       style={styles.logoImage}
                     />
@@ -29,7 +29,7 @@ export default function GetStartedScreen() {
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.getStartedButton} onPress={() => router.push('/registration')}>
+        <TouchableOpacity style={styles.getStartedButton} onPress={() => router.push('/login/registration')}>
           <Text style={styles.buttonText}>Let&apos;s Get Started</Text>
         </TouchableOpacity>
         <Text style={styles.termsText}>By continuing, you agree to our Terms of Service and Privacy Policy</Text>

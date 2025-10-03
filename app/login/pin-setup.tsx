@@ -2,8 +2,8 @@ import * as Crypto from 'expo-crypto'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../src/contexts/AuthContext'
-import { supabase } from '../src/lib/supabase'
+import { useAuth } from '../../src/contexts/AuthContext'
+import { supabase } from '../../src/lib/supabase'
 
 export default function PinSetupScreen() {
   const router = useRouter()

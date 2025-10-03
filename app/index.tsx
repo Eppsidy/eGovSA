@@ -17,11 +17,11 @@ export default function Index() {
           return
         }
         if (await checkPinExists()) {
-          router.replace('/pin-login')
+          router.replace('/login/pin-login')
           return
         }
         // New user – go to onboarding after splash delay
-        setTimeout(() => router.replace('/get-started'), 1800)
+        setTimeout(() => router.replace('/login/get-started'), 1800)
       } finally {
         setHasChecked(true)
       }

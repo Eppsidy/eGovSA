@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { supabase } from '../src/lib/supabase'
+import { supabase } from '../../src/lib/supabase'
 
 export default function LoginEmailScreen() {
   const router = useRouter()
@@ -32,14 +32,14 @@ export default function LoginEmailScreen() {
         return
       }
       if (data === true) {
-        router.push({ pathname: '/pin-login', params: { email: trimmed } })
+        router.push({ pathname: '/login/pin-login', params: { email: trimmed } })
       } else {
         Alert.alert(
           'Email not found',
           'We could not find an account with that email. You can try a different email or create a new account.',
           [
             { text: 'Try again' },
-            { text: 'Create account', onPress: () => router.push('/registration') },
+            { text: 'Create account', onPress: () => router.push('/login/registration') },
           ]
         )
       }
@@ -78,7 +78,7 @@ export default function LoginEmailScreen() {
           <Text style={styles.buttonText}>{loading ? 'Checking…' : 'Continue'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/registration')} style={styles.linkContainer}>
+        <TouchableOpacity onPress={() => router.push('/login/registration')} style={styles.linkContainer}>
           <Text style={styles.linkText}>New here? Create an account</Text>
         </TouchableOpacity>
       </View>
