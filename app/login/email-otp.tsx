@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { supabase } from '../src/lib/supabase'
+import { supabase } from '../../src/lib/supabase'
 
 export default function EmailOTPScreen() {
   const router = useRouter()
@@ -18,7 +18,7 @@ export default function EmailOTPScreen() {
     try { setSending(true); const { error } = await supabase.auth.signInWithOtp({ email, options:{ shouldCreateUser:true } }); if (error) throw error; Alert.alert('OTP Sent', `A 6-digit code was sent to ${email}`) } catch(e:any){ Alert.alert('Error', e.message) } finally { setSending(false) }
   }
   const handleChange = (value:string, index:number) => { const newCode=[...code]; newCode[index]=value.replace(/\D/g,'').slice(-1); setCode(newCode); if(newCode[index] && index<5){ inputs.current[index+1]?.focus() } }
-  const verifyCode = async () => { const token = code.join(''); if(token.length!==6){ Alert.alert('Incomplete','Please enter the full 6-digit code'); return } try { setVerifying(true); const { data, error } = await supabase.auth.verifyOtp({ email: email!, token, type:'email' }); if (error) throw error; if (data.session) { router.replace({ pathname:'/pin-setup', params:{ email, firstName, lastName } }) } else { Alert.alert('Verification Failed','Please try again') } } catch(e:any){ Alert.alert('Error', e.message) } finally { setVerifying(false) } }
+  const verifyCode = async () => { const token = code.join(''); if(token.length!==6){ Alert.alert('Incomplete','Please enter the full 6-digit code'); return } try { setVerifying(true); const { data, error } = await supabase.auth.verifyOtp({ email: email!, token, type:'email' }); if (error) throw error; if (data.session) { router.replace({ pathname:'/login/pin-setup', params:{ email, firstName, lastName } }) } else { Alert.alert('Verification Failed','Please try again') } } catch(e:any){ Alert.alert('Error', e.message) } finally { setVerifying(false) } }
 
   return (
     <KeyboardAvoidingView style={{ flex:1 }} behavior={Platform.OS==='ios'? 'padding': undefined}>

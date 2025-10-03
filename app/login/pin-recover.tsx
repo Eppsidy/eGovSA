@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { supabase } from '../src/lib/supabase'
+import { supabase } from '../../src/lib/supabase'
 
 export default function PinRecoverScreen() {
   const router = useRouter()
@@ -53,7 +53,7 @@ export default function PinRecoverScreen() {
       if (error) throw error
       if (!data.session) { Alert.alert('Verification failed', 'Please try again'); return }
       // Move to PIN reset; session is now active so we can update profile
-  router.replace('/pin-reset')
+  router.replace('/login/pin-reset')
     } catch (e: any) {
       Alert.alert('Error', e?.message ?? 'Failed to verify code')
     } finally {
@@ -64,7 +64,7 @@ export default function PinRecoverScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.back} onPress={() => email ? router.replace({ pathname: '/pin-login', params: { email } }) : router.replace('/pin-login')}>
+        <TouchableOpacity style={styles.back} onPress={() => email ? router.replace({ pathname: '/login/pin-login', params: { email } }) : router.replace('/login/pin-login')}>
           <Text style={styles.backText}>Back to PIN</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Recover PIN</Text>

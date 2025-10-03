@@ -19,7 +19,7 @@ export default function PinResetScreen() {
   const goToConfirm = () => {
     const p1 = toString(pin)
     if (p1.length !== 4) { Alert.alert('Incomplete', 'Enter 4 digits'); return }
-    router.replace(`/pin-reset-confirm?pin=${encodeURIComponent(p1)}`)
+    router.replace(`/login/pin-reset-confirm?pin=${encodeURIComponent(p1)}`)
   }
 
   const renderInputs = () => {

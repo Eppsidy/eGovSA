@@ -2,8 +2,8 @@ import * as Crypto from 'expo-crypto'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../src/contexts/AuthContext'
-import { supabase } from '../src/lib/supabase'
+import { useAuth } from '../../src/contexts/AuthContext'
+import { supabase } from '../../src/lib/supabase'
 
 export default function PinLoginScreen() {
   const [pin, setPin] = useState(['', '', '', ''])
@@ -54,10 +54,10 @@ export default function PinLoginScreen() {
       <Text style={styles.subtitle}>Unlock your account</Text>
       <View style={styles.pinRow}>{pin.map((d,i)=>(<TextInput key={i} ref={el=>{inputs.current[i]=el}} style={styles.pinInput} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i)} onSubmitEditing={submit} />))}</View>
       <TouchableOpacity style={[styles.button, pin.join('').length!==4 && styles.buttonDisabled]} disabled={pin.join('').length!==4} onPress={submit}><Text style={styles.buttonText}>Login</Text></TouchableOpacity>
-      <TouchableOpacity onPress={() => email ? router.push({ pathname: '/pin-recover', params: { email: String(email) } }) : router.push('/pin-recover')}>
+      <TouchableOpacity onPress={() => email ? router.push({ pathname: '/login/pin-recover', params: { email: String(email) } }) : router.push('/login/pin-recover')}>
         <Text style={styles.helpText}>Forgot PIN?</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/registration')}>
+      <TouchableOpacity onPress={() => router.push('/login/registration')}>
         <Text style={[styles.helpText, { marginTop: 12 }]}>Create new account</Text>
       </TouchableOpacity>
     </View>

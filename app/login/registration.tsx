@@ -13,7 +13,7 @@ export default function RegistrationScreen() {
     if (!firstName || !lastName || !email) { Alert.alert('Missing Information', 'Please fill in all fields'); return }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) { Alert.alert('Invalid Email', 'Please enter a valid email address'); return }
-    router.push({ pathname: '/email-otp', params: { email, firstName, lastName } })
+    router.push({ pathname: '/login/email-otp', params: { email, firstName, lastName } })
   }
 
   return (
@@ -27,7 +27,7 @@ export default function RegistrationScreen() {
         <TouchableOpacity style={[styles.button, (!firstName||!lastName||!email)&&styles.buttonDisabled]} onPress={handleNext} disabled={loading||!firstName||!lastName||!email}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/login-email')} style={styles.linkContainer}>
+        <TouchableOpacity onPress={() => router.push('/login/login-email')} style={styles.linkContainer}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
   <Text style={styles.progressText}>Step 1 of 4</Text>
