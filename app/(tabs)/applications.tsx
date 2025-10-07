@@ -154,7 +154,7 @@ export default function ApplicationsScreen() {
         ))}
         {list.length === 0 && (
           <View style={styles.emptyWrap}>
-            <Ionicons name="file-tray-outline" size={28} color="#94a3b8" />
+            <Ionicons name="file-tray-outline" size={28} color="#b8a894ff" />
             <Text style={styles.emptyText}>No applications here yet.</Text>
           </View>
         )}
@@ -181,7 +181,7 @@ const cardShadow = {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1, backgroundColor: '#F5F6F8' },
 
   // Tabs
   tabsWrap: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a7ea40f',
   },
   tabText: { color: '#475569', fontWeight: '700', fontSize: 13 },
-  tabTextActive: { color: '#0a7ea4' },
+  tabTextActive: { color: '#a45a0aff' },
   countBadge: {
     minWidth: 20,
     paddingHorizontal: 6,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: '#0a7ea4',
+    backgroundColor: '#E67E22',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
@@ -265,12 +265,12 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#e5e7eb',
+    borderColor: '#ebe8e5ff',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#fcfaf8ff',
   },
 
   emptyWrap: { alignItems: 'center', justifyContent: 'center', marginTop: 40, gap: 8 },
-  emptyText: { color: '#94a3b8', fontWeight: '700' },
+  emptyText: { color: '#b8a794ff', fontWeight: '700' },
 })

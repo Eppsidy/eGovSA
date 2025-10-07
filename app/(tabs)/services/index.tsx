@@ -83,7 +83,7 @@ export default function ServicesScreen() {
           {/* Card Header */}
           <View style={styles.cardHeaderRow}>
             <View style={styles.appIconBox}>
-              {cat.icon ? <Ionicons name={cat.icon} size={20} color="#16a34a" /> : null}
+              {cat.icon ? <Ionicons name={cat.icon} size={20} color="#E67E22" /> : null}
             </View>
             <View style={{ flex: 1 }}>
               <View style={styles.titleRow}>
@@ -145,7 +145,7 @@ export default function ServicesScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1, backgroundColor: '#F5F6F8' },
   container: {
     paddingHorizontal: 16,
     paddingTop: 0,
@@ -175,9 +175,9 @@ const styles = StyleSheet.create({
   agencyText: { marginTop: 2, color: '#64748b', fontSize: 13 },
   summaryText: { marginTop: 4, color: '#64748b', fontSize: 12 },
   mutedLink: { marginTop: 6, color: '#6b7280', fontSize: 12 },
-  badge: { backgroundColor: '#22c55e22', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  badgeText: { color: '#16a34a', fontSize: 12, fontWeight: '700' },
-  appIconBox: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#22c55e22', marginRight: 12, alignItems: 'center', justifyContent: 'center' },
+  badge: { backgroundColor: '#c57c2222', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
+  badgeText: { color: '#E67E22', fontSize: 12, fontWeight: '700' },
+  appIconBox: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#c5712222', marginRight: 12, alignItems: 'center', justifyContent: 'center' },
   sectionLabel: { marginTop: 14, marginBottom: 8, color: '#111827', fontSize: 13, fontWeight: '700' },
 
   serviceRow: { },
@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
   linkHit: { paddingVertical: 10, paddingHorizontal: 0 },
   linkHitPressed: { opacity: 0.85 },
   serviceRowInner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  serviceLink: { color: '#2563eb', fontSize: 16, fontWeight: '600' },
+  serviceLink: { color: '#1e48a1ff', fontSize: 16, fontWeight: '600' },
   serviceLinkPressed: { textDecorationLine: 'underline' },
   serviceHint: { marginTop: 4, color: '#6b7280', fontSize: 12 },
-  externalBtn: { marginTop: 12, backgroundColor: '#16a34a', borderRadius: 8, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
+  externalBtn: { marginTop: 12, backgroundColor: '#E67E22', borderRadius: 8, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
   externalBtnPressed: { opacity: 0.9 },
   externalBtnText: { color: '#fff', fontWeight: '700' },
 })

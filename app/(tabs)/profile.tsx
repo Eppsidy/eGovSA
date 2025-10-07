@@ -64,7 +64,7 @@ export default function ProfileScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Text style={styles.name}>{fullName}</Text>
               <View style={styles.verifiedPill}>
-                <Ionicons name="checkmark-circle" size={14} color="#16a34a" />
+                <Ionicons name="checkmark-circle" size={14} color="#fff" />
                 <Text style={styles.verifiedText}>Verified</Text>
               </View>
             </View>
@@ -98,8 +98,8 @@ export default function ProfileScreen() {
               <Switch
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#e5e7eb', true: '#c7f2d5' }}
-                thumbColor={notificationsEnabled ? '#16a34a' : '#9ca3af'}
+                trackColor={{ false: '#e5e7eb', true: '#f2dfc7ff' }}
+                thumbColor={notificationsEnabled ? '#E67E22' : '#9ca3af'}
               />
             )}
           />
@@ -122,7 +122,7 @@ export default function ProfileScreen() {
 
         {/* Footer */}
         <Pressable style={styles.signOutBtn} onPress={signOutNow}>
-          <Ionicons name="exit-outline" color="#dc2626" size={18} />
+          <Ionicons name="exit-outline" color="#fff" size={18} />
           <Text style={styles.signOutText}>Sign Out</Text>
         </Pressable>
       </ScrollView>
@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
     gap: 12,
     ...cardShadow,
   },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#0a7ea4', alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#1A2B4A', alignItems: 'center', justifyContent: 'center' },
   name: { fontSize: 16, fontWeight: '800', color: '#111827' },
-  verifiedPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#e8fbea', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
-  verifiedText: { color: '#166534', fontSize: 11, fontWeight: '800' },
+  verifiedPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E67E22', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
+  verifiedText: { color: '#fff', fontSize: 11, fontWeight: '800' },
   detailText: { fontSize: 12, color: '#475569' },
 
   cardList: { marginHorizontal: 16, backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', ...cardShadow },
@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
   itemTitle: { fontSize: 13, fontWeight: '700', color: '#1f2937' },
   itemSubtitle: { fontSize: 11, color: '#6b7280' },
 
-  signOutBtn: { margin: 16, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: '#fecaca', backgroundColor: '#fff', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  signOutText: { color: '#dc2626', fontWeight: '800' },
+  signOutBtn: { margin: 16, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: '#fedecaff', backgroundColor: '#E67E22', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  signOutText: { color: '#fff', fontWeight: '800' },
 })
