@@ -1,13 +1,55 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
-import React from 'react'
-import { Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { fetchWelcomeData, WelcomeResponse } from '../../src/lib/api'
 
 export default function HomeScreen() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const [welcomeData, setWelcomeData] = useState<WelcomeResponse | null>(null)
+  const [loadingWelcome, setLoadingWelcome] = useState(true)
+
+  // Fetch welcome data from backend API
+  useEffect(() => {
+    console.log('Home screen mounted, user state:', { 
+      hasUser: !!user, 
+      userId: user?.id,
+      firstName: user?.first_name,
+      authLoading 
+    })
+
+    const loadWelcomeData = async () => {
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log('Auth still loading, waiting...')
+        return
+      }
+
+      if (user?.id) {
+        console.log('Calling fetchWelcomeData with user ID:', user.id)
+        try {
+          setLoadingWelcome(true)
+          const data = await fetchWelcomeData(user.id)
+          console.log('Received welcome data:', data)
+          setWelcomeData(data)
+        } catch (error) {
+          console.error('❌ Failed to fetch welcome data:', error)
+          // Fallback to default if API fails
+          setWelcomeData(null)
+        } finally {
+          setLoadingWelcome(false)
+        }
+      } else {
+        console.log('⚠️ No user ID available, user not logged in')
+        setLoadingWelcome(false)
+      }
+    }
+
+    loadWelcomeData()
+  }, [user?.id, authLoading])
 
   const services = [
     {
@@ -71,11 +113,23 @@ export default function HomeScreen() {
         {/* Welcome banner */}
         <View style={styles.welcomeCard}>
           <View style={styles.avatar}>
-            <Ionicons name="person" color="#fff" size={22} />
+            {welcomeData?.user?.avatarUrl ? (
+              <Ionicons name="person" color="#fff" size={22} />
+            ) : (
+              <Ionicons name="person" color="#fff" size={22} />
+            )}
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.welcomeHi}>Hi{user?.first_name ? `, ${user.first_name}` : ', Thabo'}</Text>
-            <Text style={styles.welcomeSub}>Welcome back to eGov SA</Text>
+            {loadingWelcome ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Text style={styles.welcomeHi}>
+                  {welcomeData?.message || `Hi${user?.first_name ? `, ${user.first_name}` : ', User'}`}
+                </Text>
+                <Text style={styles.welcomeSub}>Welcome back to eGov SA</Text>
+              </>
+            )}
           </View>
           <Ionicons name="shield-checkmark-outline" size={22} color="#fff" />
         </View>

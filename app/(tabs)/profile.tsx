@@ -88,7 +88,7 @@ export default function ProfileScreen() {
             icon="person-circle-outline"
             title="Personal Information"
             subtitle="Update your details"
-            onPress={() => router.push('/personal-info' as any)}
+            onPress={() => router.push('profile/personal-info' as any)}
           />
           <ListItem
             icon="notifications-outline"

@@ -33,11 +33,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
+    console.log('🔐 AuthContext: Initializing...')
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔐 AuthContext: Session fetched:', { 
+        hasSession: !!session, 
+        userId: session?.user?.id 
+      })
       setSession(session)
       if (session?.user) {
         fetchUserProfile(session.user.id)
       } else {
+        console.log('🔐 AuthContext: No session found')
         setLoading(false)
       }
     })
@@ -46,6 +52,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('🔐 AuthContext: Auth state changed:', { 
+        event: _event, 
+        hasSession: !!session 
+      })
       setSession(session)
       if (session?.user) {
         fetchUserProfile(session.user.id)
@@ -60,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('🔐 AuthContext: Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -67,12 +78,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Error fetching profile:', error)
+        console.error('🔐 AuthContext: Error fetching profile:', error)
       } else {
+        console.log('🔐 AuthContext: Profile fetched successfully:', {
+          id: data.id,
+          firstName: data.first_name,
+          email: data.email
+        })
         setUser(data)
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('🔐 AuthContext: Exception fetching profile:', error)
     } finally {
       setLoading(false)
     }
