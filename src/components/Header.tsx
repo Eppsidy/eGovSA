@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 type HeaderProps = {
@@ -18,7 +18,10 @@ export default function Header({
       <View style={styles.headerBar}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View style={styles.logoCircle}>
-            <Text style={styles.logoText}>SA</Text>
+            <Image
+              source={require('../../assets/images/South-African-flag.jpg')}
+              style={{ width: 36, height: 36, borderRadius: 32 }}
+            />
           </View>
           <View>
             <Text style={styles.appName}>{title}</Text>
@@ -41,11 +44,11 @@ const shadow = {
 }
 
 const styles = StyleSheet.create({
-  safeTop: { backgroundColor: '#fff' },
-  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, backgroundColor: '#fff', ...shadow },
-  logoCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#2F80ED22', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  safeTop: { backgroundColor: '#1A2B4A' },
+  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 42, paddingBottom: 10, backgroundColor: '#1A2B4A', ...shadow },
+  logoCircle: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#2F80ED22', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   logoText: { fontSize: 12, fontWeight: '700', color: '#2F80ED' },
-  appName: { fontSize: 16, fontWeight: '700', color: '#222' },
-  subtitle: { fontSize: 11, color: '#667085' },
+  appName: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  subtitle: { fontSize: 11, color: '#fff' },
 
 })
