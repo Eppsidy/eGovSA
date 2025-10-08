@@ -1,13 +1,17 @@
 package org.itmda.egovsabackend.controller;
 
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
+
 import org.itmda.egovsabackend.dto.WelcomeResponse;
-import org.itmda.egovsabackend.entity.Profile;
 import org.itmda.egovsabackend.service.ProfileService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/home")
@@ -35,6 +39,13 @@ public class HomeController {
                         userInfo.setPhone(profile.getPhone());
                         userInfo.setFullName(profile.getFullName());
                         userInfo.setAvatarUrl(profile.getAvatarUrl());
+                        userInfo.setDateOfBirth(profile.getDateOfBirth());
+                        userInfo.setIsVerified(profile.getIsVerified());
+                        userInfo.setResidentialAddress(profile.getResidentialAddress());
+                        userInfo.setPostalAddress(profile.getPostalAddress());
+                        userInfo.setIdNumber(profile.getIdNumber());
+                        userInfo.setProfilePhotoUrl(profile.getProfilePhotoUrl());
+                        userInfo.setGender(profile.getGender());
 
                         response.setUser(userInfo);
                         return ResponseEntity.ok(response);
