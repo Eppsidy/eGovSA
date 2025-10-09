@@ -1,35 +1,60 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
+import { useFocusEffect, useRouter } from 'expo-router'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
 
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, refreshUser } = useAuth()
   const router = useRouter()
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+
+  // Refresh profile data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      console.log('Profile screen focused - refreshing user data')
+      refreshUser()
+    }, [])
+  )
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refreshUser()
+    setRefreshing(false)
+  }, [])
 
   const fullName = useMemo(() => {
     const fn = user?.first_name?.trim()
     const ln = user?.last_name?.trim()
     const name = [fn, ln].filter(Boolean).join(' ')
-    return name || 'Thabo Mthembu'
+    console.log('Profile: fullName computed:', { fn, ln, name, fullName: user?.full_name })
+    return name || user?.full_name || 'User'
   }, [user])
 
   const idNumber = useMemo(() => {
-    // Placeholder SA ID if none available. Your backend can supply a real value later.
-    const raw = user?.id
-    // If looks like a UUID, present a short version to avoid overflowing the UI
-    if (raw && raw.includes('-')) return `${raw.slice(0, 8)}…`
-    return raw || '8901234567890'
+    console.log('Profile: idNumber from user:', user?.id_number)
+    return user?.id_number || null
   }, [user])
 
-  const email = user?.email || 'thabo.mthembu@email.com'
-  const phone = user?.phone || '+27 82 123 4567'
+  const email = user?.email || null
+  const phone = user?.phone || null
+  
+  console.log('Profile: user data:', { 
+    email, 
+    phone, 
+    id_number: user?.id_number,
+    gender: user?.gender,
+    dateOfBirth: user?.date_of_birth 
+  })
+  const gender = user?.gender || null
+  const dateOfBirth = user?.date_of_birth || null
+  const residentialAddress = user?.residential_address || null
+  
   const memberSince = useMemo(() => {
     const iso = user?.created_at
-    if (!iso) return '15/03/2022'
+    if (!iso) return null
     try {
       const d = new Date(iso)
       const dd = String(d.getDate()).padStart(2, '0')
@@ -37,7 +62,7 @@ export default function ProfileScreen() {
       const yyyy = d.getFullYear()
       return `${dd}/${mm}/${yyyy}`
     } catch {
-      return '15/03/2022'
+      return null
     }
   }, [user?.created_at])
 
@@ -54,7 +79,18 @@ export default function ProfileScreen() {
     <View style={styles.page}>
       <Header />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        contentContainerStyle={{ paddingBottom: 120 }} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            tintColor="#E67E22"
+            colors={["#E67E22"]}
+          />
+        }
+      >
         {/* Profile header card */}
         <View style={styles.cardProfile}>
           <View style={styles.avatar}>
@@ -69,10 +105,13 @@ export default function ProfileScreen() {
               </View>
             </View>
             <View style={{ marginTop: 8, gap: 4 }}>
-              <DetailRow icon="card-outline" label={`ID: ${idNumber}`} />
-              <DetailRow icon="mail-outline" label={email} />
-              <DetailRow icon="call-outline" label={phone} />
-              <DetailRow icon="calendar-outline" label={`Member since ${memberSince}`} />
+              {idNumber && <DetailRow icon="card-outline" label={`ID: ${idNumber}`} />}
+              {email && <DetailRow icon="mail-outline" label={email} />}
+              {phone && <DetailRow icon="call-outline" label={phone} />}
+              {gender && <DetailRow icon="person-outline" label={`Gender: ${gender}`} />}
+              {dateOfBirth && <DetailRow icon="calendar-outline" label={`DOB: ${dateOfBirth}`} />}
+              {residentialAddress && <DetailRow icon="location-outline" label={residentialAddress} />}
+              {memberSince && <DetailRow icon="time-outline" label={`Member since ${memberSince}`} />}
             </View>
           </View>
 

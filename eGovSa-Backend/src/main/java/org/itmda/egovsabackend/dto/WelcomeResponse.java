@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WelcomeResponse {
-    private String message;
-    private UserInfo user;
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -22,5 +19,15 @@ public class WelcomeResponse {
         private String phone;
         private String fullName;
         private String avatarUrl;
+        private String dateOfBirth;
+        private Boolean isVerified;
+        private String residentialAddress;
+        private String postalAddress;
+        private String idNumber;
+        private String profilePhotoUrl;
+        private String gender;
     }
+    private String message;
+
+    private UserInfo user;
 }
