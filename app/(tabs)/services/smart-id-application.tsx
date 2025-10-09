@@ -188,13 +188,13 @@ export default function SmartIDApplication() {
           <TouchableOpacity
             style={[
               styles.submit,
-              { backgroundColor: '#84cc16', opacity: isComplete ? 1 : 0.6 },
+              { backgroundColor: '#1A2B4A', opacity: isComplete ? 1 : 0.6 },
             ]}
             onPress={onSubmit}
             accessibilityRole="button"
             disabled={!isComplete}
           >
-            <Text style={[styles.submitText, { color: '#04260b' }]}>Submit application</Text>
+            <Text style={[styles.submitText, { color: '#ffffffff' }]}>Submit application</Text>
           </TouchableOpacity>
           {!isComplete ? (
             <Text style={styles.helper}>Complete all fields and upload the three documents to enable submit.</Text>
