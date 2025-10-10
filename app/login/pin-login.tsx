@@ -1,5 +1,6 @@
 import * as Crypto from 'expo-crypto'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../src/contexts/AuthContext'
@@ -8,7 +9,7 @@ import { supabase } from '../../src/lib/supabase'
 export default function PinLoginScreen() {
   const [pin, setPin] = useState(['', '', '', ''])
   const inputs = useRef<(TextInput | null)[]>([])
-  const { verifyPin } = useAuth()
+  const { verifyPin, refreshUser } = useAuth()
   const router = useRouter()
   const { email } = useLocalSearchParams<{ email?: string }>()
   const handleChange = (val:string, idx:number) => { const arr=[...pin]; arr[idx]=val.replace(/\D/g,'').slice(-1); setPin(arr); if(arr[idx] && idx<3) inputs.current[idx+1]?.focus() }
@@ -26,6 +27,15 @@ export default function PinLoginScreen() {
           return
         }
         if (data === true) {
+          // PIN verified - store email in SecureStore for session-less access
+          console.log('PIN verified, storing email:', String(email))
+          await SecureStore.setItemAsync('userEmail', String(email))
+          // Verify it was stored
+          const storedEmail = await SecureStore.getItemAsync('userEmail')
+          console.log('Email stored and verified:', storedEmail)
+          // Manually refresh user profile
+          console.log('Triggering manual user refresh...')
+          await refreshUser()
           router.replace('/home')
         } else {
           Alert.alert('Incorrect PIN', 'Please try again')

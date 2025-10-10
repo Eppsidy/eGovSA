@@ -1,13 +1,55 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
-import React from 'react'
-import { Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { fetchWelcomeData, WelcomeResponse } from '../../src/lib/api'
 
 export default function HomeScreen() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const [welcomeData, setWelcomeData] = useState<WelcomeResponse | null>(null)
+  const [loadingWelcome, setLoadingWelcome] = useState(true)
+
+  // Fetch welcome data from backend API
+  useEffect(() => {
+    console.log('Home screen mounted, user state:', { 
+      hasUser: !!user, 
+      userId: user?.id,
+      firstName: user?.first_name,
+      authLoading 
+    })
+
+    const loadWelcomeData = async () => {
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log('Auth still loading, waiting...')
+        return
+      }
+
+      if (user?.id) {
+        console.log('Calling fetchWelcomeData with user ID:', user.id)
+        try {
+          setLoadingWelcome(true)
+          const data = await fetchWelcomeData(user.id)
+          console.log('Received welcome data:', data)
+          setWelcomeData(data)
+        } catch (error) {
+          console.error('❌ Failed to fetch welcome data:', error)
+          // Fallback to default if API fails
+          setWelcomeData(null)
+        } finally {
+          setLoadingWelcome(false)
+        }
+      } else {
+        console.log('⚠️ No user ID available, user not logged in')
+        setLoadingWelcome(false)
+      }
+    }
+
+    loadWelcomeData()
+  }, [user?.id, authLoading])
 
   const services = [
     {
@@ -27,7 +69,7 @@ export default function HomeScreen() {
     {
       key: 'eFiling',
       title: 'eFiling',
-      color: '#9B51E0',
+      color: '#e67c35ff',
       icon: <Ionicons name="file-tray-full-outline" size={22} color="#fff" />,
       onPress: () => router.push('/(tabs)/services' as any),
     },
@@ -71,11 +113,23 @@ export default function HomeScreen() {
         {/* Welcome banner */}
         <View style={styles.welcomeCard}>
           <View style={styles.avatar}>
-            <Ionicons name="person" color="#fff" size={22} />
+            {welcomeData?.user?.avatarUrl ? (
+              <Ionicons name="person" color="#fff" size={22} />
+            ) : (
+              <Ionicons name="person" color="#fff" size={22} />
+            )}
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.welcomeHi}>Hi{user?.first_name ? `, ${user.first_name}` : ', Thabo'}</Text>
-            <Text style={styles.welcomeSub}>Welcome back to eGov SA</Text>
+            {loadingWelcome ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Text style={styles.welcomeHi}>
+                  {welcomeData?.message || `Hi${user?.first_name ? `, ${user.first_name}` : ', User'}`}
+                </Text>
+                <Text style={styles.welcomeSub}>Welcome back to eGov SA</Text>
+              </>
+            )}
           </View>
           <Ionicons name="shield-checkmark-outline" size={22} color="#fff" />
         </View>
@@ -120,7 +174,7 @@ export default function HomeScreen() {
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-              <View style={styles.contactIcon}><Ionicons name="call-outline" size={18} color="#2F80ED" /></View>
+              <View style={styles.contactIcon}><Ionicons name="call-outline" size={18} color="#E67E22" /></View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.contactName}>{c.name}</Text>
                 <Text style={styles.contactDept}>{c.dept}</Text>
@@ -146,13 +200,13 @@ const cardShadow = {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1, backgroundColor: '#F5F6F8' },
   // header styles removed (now provided by shared Header component)
 
-  welcomeCard: { margin: 16, padding: 16, backgroundColor: '#0a7ea4', borderRadius: 14, flexDirection: 'row', alignItems: 'center', gap: 12, ...cardShadow },
-  avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0a7ea4aa', alignItems: 'center', justifyContent: 'center' },
-  welcomeHi: { fontSize: 16, color: '#fff', fontWeight: '700' },
-  welcomeSub: { fontSize: 12, color: '#e8f6fb' },
+  welcomeCard: { margin: 16, padding: 20, backgroundColor: '#fff', borderRadius: 14, flexDirection: 'row', alignItems: 'center', gap: 12, ...cardShadow },
+  avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#1A2B4A', alignItems: 'center', justifyContent: 'center' },
+  welcomeHi: { fontSize: 20, color: '#1A2B4A', fontWeight: '700',  },
+  welcomeSub: { fontSize: 16, color: '#5A6C7D' },
 
   sectionTitle: { marginTop: 10, marginHorizontal: 16, marginBottom: 10, fontSize: 14, fontWeight: '700', color: '#222' },
   rowBetween: { marginHorizontal: 16, marginTop: 10, marginBottom: 6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -161,19 +215,19 @@ const styles = StyleSheet.create({
   servicesGrid: { flexDirection: 'row', gap: 12, paddingHorizontal: 16 },
   serviceCard: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center', ...cardShadow },
   serviceIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  serviceText: { fontSize: 12, color: '#222', fontWeight: '600' },
+  serviceText: { fontSize: 14, color: '#222', fontWeight: '600' },
 
-  notificationCard: { marginHorizontal: 16, marginBottom: 10, backgroundColor: '#E8F5EE', borderRadius: 12, padding: 12, ...cardShadow },
-  dotActive: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e', marginRight: 6 },
-  notificationTitle: { fontSize: 13, fontWeight: '700', color: '#1e293b' },
-  notificationDesc: { fontSize: 12, color: '#334155', marginBottom: 6 },
-  notificationTime: { fontSize: 11, color: '#64748b' },
+  notificationCard: { marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 12, ...cardShadow },
+  dotActive: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#de6c0fff', marginRight: 6 },
+  notificationTitle: { fontSize: 14, fontWeight: '700', color: '#1A2B4A' },
+  notificationDesc: { fontSize: 13, color: '#334155', marginBottom: 6 },
+  notificationTime: { fontSize: 12, color: '#5A6C7D' },
 
   contactCard: { marginHorizontal: 16, marginBottom: 12, backgroundColor: '#fff', borderRadius: 12, padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...cardShadow },
-  contactIcon: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#2F80ED22', alignItems: 'center', justifyContent: 'center' },
-  contactName: { fontSize: 13, fontWeight: '700', color: '#1f2937' },
-  contactDept: { fontSize: 11, color: '#6b7280' },
-  contactPhone: { fontSize: 12, color: '#0a7ea4', marginTop: 2 },
-  callBtn: { backgroundColor: '#e6f3f8', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10 },
-  callBtnText: { color: '#0a7ea4', fontWeight: '700' },
+  contactIcon: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#ed7e2f22', alignItems: 'center', justifyContent: 'center' },
+  contactName: { fontSize: 14, fontWeight: '700', color: '#37291fff' },
+  contactDept: { fontSize: 12, color: '#80756bff' },
+  contactPhone: { fontSize: 13, color: '#E67E22', marginTop: 2 },
+  callBtn: { backgroundColor: '#f8ebe6ff', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10 },
+  callBtnText: { color: '#E67E22', fontWeight: '700' },
 })
