@@ -1,9 +1,12 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../../src/contexts/AuthContext';
+import { createApplication, updateProfile } from '../../../src/lib/api';
 
 export default function LearnersLicenceApplication() {
+  const { user } = useAuth();
   const [fullName, setFullName] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [dob, setDob] = useState('');
@@ -12,6 +15,7 @@ export default function LearnersLicenceApplication() {
   const [postalAddress, setPostalAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Calendar & Time slot states
   const [showCalendar, setShowCalendar] = useState(false);
@@ -22,6 +26,22 @@ export default function LearnersLicenceApplication() {
   const [height, setHeight] = useState('');
   const [glasses, setGlasses] = useState('');
   const [medical, setMedical] = useState('');
+
+  // Auto-populate fields from user profile
+  useEffect(() => {
+    if (user) {
+      if (user.full_name) setFullName(user.full_name);
+      else if (user.first_name && user.last_name) setFullName(`${user.first_name} ${user.last_name}`);
+      
+      if (user.id_number) setIdNumber(user.id_number);
+      if (user.date_of_birth) setDob(user.date_of_birth);
+      if (user.gender) setGender(user.gender);
+      if (user.residential_address) setResAddress(user.residential_address);
+      if (user.postal_address) setPostalAddress(user.postal_address);
+      if (user.phone) setPhone(user.phone);
+      if (user.email) setEmail(user.email);
+    }
+  }, [user]);
 
   // Handle calendar selection
   const handleDateChange = (event: any, date?: Date | undefined) => {
@@ -36,15 +56,78 @@ export default function LearnersLicenceApplication() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!fullName || !idNumber || !dob || !gender || !resAddress || !phone || !email || !selectedDate) {
       Alert.alert('Validation Error', 'Please fill in all required fields including appointment date.');
       return;
     }
-    Alert.alert(
-      'Form Submitted',
-      `Thank you ${fullName}, your application has been received.\n\nAppointment Date: ${selectedDate.toDateString()}\nTime Slot: ${timeSlot}`
-    );
+
+    setLoading(true);
+
+    try {
+      // Update profile with any missing information
+      if (user?.id) {
+        const updateData: any = {};
+        
+        // Parse full name into first and last name if needed
+        if (!user.first_name || !user.last_name) {
+          const nameParts = fullName.trim().split(' ');
+          if (!user.first_name && nameParts.length > 0) updateData.firstName = nameParts[0];
+          if (!user.last_name && nameParts.length > 1) updateData.lastName = nameParts.slice(1).join(' ');
+        }
+        
+        if (!user.id_number && idNumber.trim()) updateData.idNumber = idNumber;
+        if (!user.date_of_birth && dob.trim()) updateData.dateOfBirth = dob;
+        if (!user.gender && gender.trim()) updateData.gender = gender;
+        if (!user.residential_address && resAddress.trim()) updateData.residentialAddress = resAddress;
+        if (!user.postal_address && postalAddress.trim()) updateData.postalAddress = postalAddress;
+        if (!user.phone && phone.trim()) updateData.phone = phone;
+        if (!user.email && email.trim()) updateData.email = email;
+
+        // Only call API if there's data to update
+        if (Object.keys(updateData).length > 0) {
+          console.log('Updating profile with missing data:', updateData);
+          await updateProfile(user.id, updateData);
+        }
+      }
+
+      // Create application in backend
+      if (user?.id) {
+        const applicationData = {
+          fullName,
+          idNumber,
+          dob,
+          gender,
+          resAddress,
+          postalAddress,
+          phone,
+          email,
+          appointmentDate: selectedDate.toISOString(),
+          timeSlot,
+          eyeColor,
+          height,
+          glasses,
+          medical,
+        };
+
+        await createApplication(user.id, {
+          serviceType: 'Learners Licence Application',
+          applicationData: JSON.stringify(applicationData),
+        });
+
+        console.log('Learners licence application created successfully');
+      }
+
+      Alert.alert(
+        'Form Submitted',
+        `Thank you ${fullName}, your application has been received.\n\nAppointment Date: ${selectedDate.toDateString()}\nTime Slot: ${timeSlot}`
+      );
+    } catch (error) {
+      console.error('Error submitting learners licence application:', error);
+      Alert.alert('Error', 'Failed to submit application. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -103,16 +186,9 @@ export default function LearnersLicenceApplication() {
           />
         )}
 
-        {/* Additional Information */}
-        <Text style={styles.sectionTitle}>Additional Information</Text>
-        <TextInput style={styles.input} placeholder="Eye Color" value={eyeColor} onChangeText={setEyeColor} />
-        <TextInput style={styles.input} placeholder="Height (cm)" keyboardType="numeric" value={height} onChangeText={setHeight} />
-        <TextInput style={styles.input} placeholder="Do you wear glasses/contact lenses?" value={glasses} onChangeText={setGlasses} />
-        <TextInput style={styles.input} placeholder="Any medical conditions affecting driving?" value={medical} onChangeText={setMedical} />
-
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit Application</Text>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
+          <Text style={styles.submitButtonText}>{loading ? 'Submitting...' : 'Submit Application'}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

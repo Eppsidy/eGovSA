@@ -1,13 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useAuth } from '../../../src/contexts/AuthContext'
+import { createApplication, updateProfile } from '../../../src/lib/api'
 
 export default function PassportApplication() {
+  const { user } = useAuth()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [idNumber, setIdNumber] = useState('')
   const [appointment, setAppointment] = useState<Date | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  function submitPassportForm() {
+  // Auto-populate fields from user profile
+  useEffect(() => {
+    if (user) {
+      if (user.first_name) setFirstName(user.first_name)
+      if (user.last_name) setLastName(user.last_name)
+      if (user.id_number) setIdNumber(user.id_number)
+    }
+  }, [user])
+
+  async function submitPassportForm() {
     if (!firstName.trim() || !lastName.trim() || !idNumber.trim()) {
       Alert.alert('Missing fields', 'Please fill in all fields before submitting.')
       return
@@ -17,10 +30,51 @@ export default function PassportApplication() {
       Alert.alert('Invalid ID', 'ID number must be 13 digits.')
       return
     }
-    const assigned = generateRandomAppointment()
-    setAppointment(assigned)
-    Alert.alert('Submitted', `Application submitted for ${firstName} ${lastName}.\nYour appointment: ${assigned.toLocaleString()}`)
-    setFirstName(''); setLastName(''); setIdNumber('')
+
+    setLoading(true)
+
+    try {
+      // Update profile with any missing information
+      if (user?.id) {
+        const updateData: any = {}
+        
+        if (!user.first_name && firstName.trim()) updateData.firstName = firstName
+        if (!user.last_name && lastName.trim()) updateData.lastName = lastName
+        if (!user.id_number && idNumber.trim()) updateData.idNumber = idNumber
+
+        // Only call API if there's data to update
+        if (Object.keys(updateData).length > 0) {
+          console.log('Updating profile with missing data:', updateData)
+          await updateProfile(user.id, updateData)
+        }
+      }
+
+      // Create application in backend
+      if (user?.id) {
+        const applicationData = {
+          firstName,
+          lastName,
+          idNumber,
+        }
+
+        await createApplication(user.id, {
+          serviceType: 'Passport Application',
+          applicationData: JSON.stringify(applicationData),
+        })
+
+        console.log('Passport application created successfully')
+      }
+
+      const assigned = generateRandomAppointment()
+      setAppointment(assigned)
+      Alert.alert('Submitted', `Application submitted for ${firstName} ${lastName}.\nYour appointment: ${assigned.toLocaleString()}`)
+      setFirstName(''); setLastName(''); setIdNumber('')
+    } catch (error) {
+      console.error('Error submitting passport application:', error)
+      Alert.alert('Error', 'Failed to submit application. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function generateRandomAppointment() {
@@ -60,8 +114,8 @@ export default function PassportApplication() {
           <TextInput value={firstName} onChangeText={setFirstName} placeholder="First name" style={styles.input} />
           <TextInput value={lastName} onChangeText={setLastName} placeholder="Surname" style={styles.input} />
           <TextInput value={idNumber} onChangeText={setIdNumber} placeholder="ID number (13 digits)" style={styles.input} keyboardType="number-pad" />
-          <TouchableOpacity style={styles.submit} onPress={submitPassportForm} accessibilityRole="button">
-            <Text style={styles.submitText}>Submit application</Text>
+          <TouchableOpacity style={styles.submit} onPress={submitPassportForm} accessibilityRole="button" disabled={loading}>
+            <Text style={styles.submitText}>{loading ? 'Submitting...' : 'Submit application'}</Text>
           </TouchableOpacity>
           {appointment ? (
             <View style={{ marginTop: 12 }}>

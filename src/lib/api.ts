@@ -111,4 +111,188 @@ export const updateProfile = async (userId: string, data: UpdateProfileRequest):
   }
 }
 
+// ============================================
+// Applications API
+// ============================================
+
+export interface ApplicationDocument {
+  id: string
+  applicationId: string
+  documentType: string
+  fileName: string
+  fileUrl: string
+  fileSize: number
+  uploadedAt: string
+}
+
+export interface Application {
+  id: string
+  userId: string
+  serviceType: string
+  referenceNumber: string
+  status: 'In Progress' | 'Under Review' | 'Pending Payment' | 'Completed' | 'Rejected'
+  currentStep: string
+  applicationData: string // JSON string
+  submittedAt: string
+  expectedCompletionDate: string
+  completedAt?: string
+  createdAt: string
+  updatedAt: string
+  documents: ApplicationDocument[]
+}
+
+export interface CreateApplicationRequest {
+  serviceType: string
+  applicationData: string // JSON string with form data
+}
+
+/**
+ * Create a new application
+ */
+export const createApplication = async (userId: string, request: CreateApplicationRequest): Promise<Application> => {
+  try {
+    const response = await api.post<Application>(`/api/applications?userId=${userId}`, request)
+    console.log('Create Application Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating application:', error)
+    throw error
+  }
+}
+
+/**
+ * Get all applications for a user
+ */
+export const getUserApplications = async (userId: string): Promise<Application[]> => {
+  try {
+    const response = await api.get<Application[]>(`/api/applications/user/${userId}`)
+    console.log('User Applications Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching applications:', error)
+    throw error
+  }
+}
+
+/**
+ * Get applications by status
+ */
+export const getUserApplicationsByStatus = async (userId: string, status: string): Promise<Application[]> => {
+  try {
+    const response = await api.get<Application[]>(`/api/applications/user/${userId}/status/${status}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching applications by status:', error)
+    throw error
+  }
+}
+
+/**
+ * Get applications by multiple statuses (for Active tab)
+ */
+export const getUserApplicationsByStatuses = async (userId: string, statuses: string[]): Promise<Application[]> => {
+  try {
+    const response = await api.post<Application[]>(`/api/applications/user/${userId}/statuses`, statuses)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching applications by statuses:', error)
+    throw error
+  }
+}
+
+/**
+ * Get single application by ID
+ */
+export const getApplicationById = async (id: string): Promise<Application> => {
+  try {
+    const response = await api.get<Application>(`/api/applications/${id}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching application:', error)
+    throw error
+  }
+}
+
+/**
+ * Update application status
+ */
+export const updateApplicationStatus = async (
+  id: string, 
+  status: string, 
+  currentStep?: string
+): Promise<Application> => {
+  try {
+    const response = await api.patch<Application>(`/api/applications/${id}/status`, {
+      status,
+      currentStep,
+    })
+    return response.data
+  } catch (error: any) {
+    console.error('Error updating application status:', error)
+    throw error
+  }
+}
+
+/**
+ * Add document to application
+ */
+export const addApplicationDocument = async (
+  applicationId: string, 
+  document: Omit<ApplicationDocument, 'id' | 'uploadedAt'>
+): Promise<ApplicationDocument> => {
+  try {
+    const response = await api.post<ApplicationDocument>(
+      `/api/applications/${applicationId}/documents`, 
+      document
+    )
+    return response.data
+  } catch (error: any) {
+    console.error('Error adding document:', error)
+    throw error
+  }
+}
+
+// ============================================
+// Services API
+// ============================================
+
+export interface ServiceInfo {
+  id: string
+  serviceName: string
+  description: string
+  category: string
+  requiredDocuments: string // JSON array
+  processingTimeDays: number
+  fees: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+/**
+ * Get all active services
+ */
+export const getAllServices = async (): Promise<ServiceInfo[]> => {
+  try {
+    const response = await api.get<ServiceInfo[]>('/api/services')
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching services:', error)
+    throw error
+  }
+}
+
+/**
+ * Get services by category
+ */
+export const getServicesByCategory = async (category: string): Promise<ServiceInfo[]> => {
+  try {
+    const response = await api.get<ServiceInfo[]>(`/api/services/category/${category}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching services by category:', error)
+    throw error
+  }
+}
+
 export default api

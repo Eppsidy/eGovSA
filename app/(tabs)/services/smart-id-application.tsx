@@ -1,9 +1,12 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Button, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../../src/contexts/AuthContext';
+import { createApplication, updateProfile } from '../../../src/lib/api';
 
 export default function SmartIDApplication() {
+  const { user } = useAuth();
   const [name, setName] = useState<string>('');
   const [surname, setSurname] = useState<string>('');
   const [dob, setDob] = useState<string>('');
@@ -14,6 +17,20 @@ export default function SmartIDApplication() {
   const [parentIdUri, setParentIdUri] = useState<string | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<Date | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Auto-populate fields from user profile
+  useEffect(() => {
+    if (user) {
+      if (user.first_name) setName(user.first_name);
+      if (user.last_name) setSurname(user.last_name);
+      if (user.date_of_birth) {
+        setDob(user.date_of_birth);
+        setDobDate(new Date(user.date_of_birth));
+      }
+      if (user.gender) setGender(user.gender.toLowerCase());
+    }
+  }, [user]);
 
   async function pickImage(setter: (uri: string | null) => void) {
     try {
@@ -37,7 +54,7 @@ export default function SmartIDApplication() {
     }
   }
 
-  function onSubmit() {
+  async function onSubmit() {
     if (!name.trim() || !surname.trim() || !dob.trim() || !gender.trim()) {
       Alert.alert('Missing information', 'Please fill in all fields before submitting.');
       return;
@@ -49,13 +66,59 @@ export default function SmartIDApplication() {
       return;
     }
 
-  // In a real app, submit to API here. For now show a confirmation and assign an appointment.
-  const assigned = generateRandomAppointment();
-  setAppointment(assigned);
-  Alert.alert('Application submitted', `Thank you ${name} ${surname}. We received your application.\nYour appointment: ${assigned.toLocaleString()}`);
-    // clear form
-    setName(''); setSurname(''); setDob(''); setGender('');
-    setBirthCertUri(null); setParentIdUri(null); setPhotoUri(null);
+    setLoading(true);
+
+    try {
+      // Update profile with any missing information
+      if (user?.id) {
+        const updateData: any = {};
+        
+        if (!user.first_name && name.trim()) updateData.firstName = name;
+        if (!user.last_name && surname.trim()) updateData.lastName = surname;
+        if (!user.date_of_birth && dob.trim()) updateData.dateOfBirth = dob;
+        if (!user.gender && gender.trim()) updateData.gender = gender;
+
+        // Only call API if there's data to update
+        if (Object.keys(updateData).length > 0) {
+          console.log('Updating profile with missing data:', updateData);
+          await updateProfile(user.id, updateData);
+        }
+      }
+
+      // Create application in backend
+      if (user?.id) {
+        const applicationData = {
+          name,
+          surname,
+          dob,
+          gender,
+          hasBirthCertificate: !!birthCertUri,
+          hasParentId: !!parentIdUri,
+          hasPhoto: !!photoUri,
+        };
+
+        await createApplication(user.id, {
+          serviceType: 'Smart ID Card Application',
+          applicationData: JSON.stringify(applicationData),
+        });
+
+        console.log('Smart ID application created successfully');
+      }
+
+      // In a real app, submit to API here. For now show a confirmation and assign an appointment.
+      const assigned = generateRandomAppointment();
+      setAppointment(assigned);
+      Alert.alert('Application submitted', `Thank you ${name} ${surname}. We received your application.\nYour appointment: ${assigned.toLocaleString()}`);
+      
+      // clear form
+      setName(''); setSurname(''); setDob(''); setGender('');
+      setBirthCertUri(null); setParentIdUri(null); setPhotoUri(null);
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      Alert.alert('Error', 'Failed to submit application. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const isComplete = !!(
@@ -192,9 +255,11 @@ export default function SmartIDApplication() {
             ]}
             onPress={onSubmit}
             accessibilityRole="button"
-            disabled={!isComplete}
+            disabled={!isComplete || loading}
           >
-            <Text style={[styles.submitText, { color: '#ffffffff' }]}>Submit application</Text>
+            <Text style={[styles.submitText, { color: '#ffffffff' }]}>
+              {loading ? 'Submitting...' : 'Submit application'}
+            </Text>
           </TouchableOpacity>
           {!isComplete ? (
             <Text style={styles.helper}>Complete all fields and upload the three documents to enable submit.</Text>
