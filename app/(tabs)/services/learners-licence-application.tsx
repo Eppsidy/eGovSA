@@ -203,10 +203,10 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, marginBottom: 12, fontSize: 16 },
   picker: { height: 50, width: '100%', marginBottom: 12 },
   label: { fontSize: 14, color: '#475569', marginBottom: 4 },
-  dateButton: { backgroundColor: '#f97316', padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 10 },
+  dateButton: { backgroundColor: '#475569', padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 10 },
   dateButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   timeSlotBox: { backgroundColor: '#e0f2fe', padding: 10, borderRadius: 8, marginBottom: 12 },
   timeSlotText: { color: '#0369a1', fontSize: 15, fontWeight: '600' },
-  submitButton: { backgroundColor: 'orange', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 10 },
+  submitButton: { backgroundColor: '#475569', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 10 },
   submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

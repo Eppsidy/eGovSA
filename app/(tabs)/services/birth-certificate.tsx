@@ -152,6 +152,7 @@ export default function BirthCertificate() {
           <TouchableOpacity style={styles.submit} onPress={submitForm}>
             <Text style={styles.submitText}>Submit Application</Text>
           </TouchableOpacity>
+          <Text style={styles.helper}>Complete all fields and upload the two documents to enable submit.</Text>
 
           {collectionDate && (
             <View style={{ marginTop: 12 }}>
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   uploadButton: {
-    backgroundColor: '#f97316',
+    backgroundColor: '#1A2B4A',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
   uploadText: { color: '#fff', fontWeight: '600' },
   dateButton: {
-    backgroundColor: '#f97316',
+    backgroundColor: '#1A2B4A',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -207,4 +208,5 @@ const styles = StyleSheet.create({
   dateButtonText: { color: '#fff', fontWeight: '600' },
   submit: { backgroundColor: '#0f172a', padding: 12, borderRadius: 5, marginTop: 10 },
   submitText: { color: '#fff', textAlign: 'center', fontWeight: '600' },
+  helper: { color: '#475569', fontSize: 12, marginTop: 4, textAlign: 'center' },
 });
