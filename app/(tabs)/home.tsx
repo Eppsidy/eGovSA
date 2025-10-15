@@ -4,12 +4,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
-import { fetchWelcomeData, getActiveUserNotifications, Notification, WelcomeResponse } from '../../src/lib/api'
+import { fetchProfile, fetchWelcomeData, getActiveUserNotifications, Notification, WelcomeResponse, WelcomeUserInfo } from '../../src/lib/api'
 
 export default function HomeScreen() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [welcomeData, setWelcomeData] = useState<WelcomeResponse | null>(null)
+  const [profileData, setProfileData] = useState<WelcomeUserInfo | null>(null)
   const [loadingWelcome, setLoadingWelcome] = useState(true)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loadingNotifications, setLoadingNotifications] = useState(true)
@@ -32,16 +33,23 @@ export default function HomeScreen() {
       }
 
       if (user?.id) {
-        console.log('Calling fetchWelcomeData with user ID:', user.id)
+        console.log('Calling fetchWelcomeData and fetchProfile with user ID:', user.id)
         try {
           setLoadingWelcome(true)
-          const data = await fetchWelcomeData(user.id)
-          console.log('Received welcome data:', data)
-          setWelcomeData(data)
+          // Fetch both welcome data and profile data from cache/API
+          const [welcomeResponse, profileResponse] = await Promise.all([
+            fetchWelcomeData(user.id),
+            fetchProfile(user.id)
+          ])
+          console.log('Received welcome data:', welcomeResponse)
+          console.log('Received profile data:', profileResponse)
+          setWelcomeData(welcomeResponse)
+          setProfileData(profileResponse)
         } catch (error) {
-          console.error('❌ Failed to fetch welcome data:', error)
+          console.error('❌ Failed to fetch welcome/profile data:', error)
           // Fallback to default if API fails
           setWelcomeData(null)
+          setProfileData(null)
         } finally {
           setLoadingWelcome(false)
         }
@@ -84,10 +92,11 @@ export default function HomeScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     try {
-      // Refresh both welcome data and notifications
+      // Refresh welcome data, profile data, and notifications
       if (user?.id) {
         await Promise.all([
           fetchWelcomeData(user.id).then(data => setWelcomeData(data)).catch(() => {}),
+          fetchProfile(user.id).then(data => setProfileData(data)).catch(() => {}),
           fetchNotifications()
         ])
       }

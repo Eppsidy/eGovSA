@@ -30,10 +30,12 @@ export default function PinLoginScreen() {
           // PIN verified - store email in SecureStore for session-less access
           console.log('PIN verified, storing email:', String(email))
           await SecureStore.setItemAsync('userEmail', String(email))
+          
           // Verify it was stored
           const storedEmail = await SecureStore.getItemAsync('userEmail')
           console.log('Email stored and verified:', storedEmail)
-          // Manually refresh user profile
+          
+          // Manually refresh user profile - this will fetch and cache the profile
           console.log('Triggering manual user refresh...')
           await refreshUser()
           router.replace('/home')

@@ -2,8 +2,9 @@ import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export default function GetStartedScreen() {
+export default async function GetStartedScreen() {
   const router = useRouter()
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>

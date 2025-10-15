@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { fetchProfile } from '../../src/lib/api'
 
 export default function ProfileScreen() {
   const { user, signOut, refreshUser } = useAuth()
@@ -16,14 +17,28 @@ export default function ProfileScreen() {
     useCallback(() => {
       console.log('Profile screen focused - refreshing user data')
       refreshUser()
-    }, [])
+      // Also fetch from backend to ensure we have latest data
+      if (user?.id) {
+        fetchProfile(user.id).catch(err => {
+          console.error('Failed to fetch profile on focus:', err)
+        })
+      }
+    }, [user?.id])
   )
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     await refreshUser()
+    // Also fetch from backend
+    if (user?.id) {
+      try {
+        await fetchProfile(user.id)
+      } catch (error) {
+        console.error('Failed to fetch profile on refresh:', error)
+      }
+    }
     setRefreshing(false)
-  }, [])
+  }, [user?.id])
 
   const fullName = useMemo(() => {
     const fn = user?.first_name?.trim()

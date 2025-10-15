@@ -1,4 +1,5 @@
 import axios from 'axios'
+import * as SecureStore from 'expo-secure-store'
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080'
 
@@ -51,6 +52,21 @@ export interface UpdateProfileRequest {
  */
 export const fetchWelcomeData = async (userId: string): Promise<WelcomeResponse> => {
   try {
+    const cachedWelcome = await SecureStore.getItemAsync(`welcome_${userId}`)
+    if (cachedWelcome) {
+      console.log('Welcome data fetched from SecureStore cache')
+      const parsed = JSON.parse(cachedWelcome)
+      // Return cached data but fetch fresh data in background
+      setTimeout(() => {
+        api.get<WelcomeResponse>(`/api/home/welcome/${userId}`)
+          .then(response => {
+            SecureStore.setItemAsync(`welcome_${userId}`, JSON.stringify(response.data))
+          })
+          .catch(() => {})
+      }, 0)
+      return parsed
+    }
+
     console.log('API Configuration:', {
       baseURL: API_BASE_URL,
       endpoint: `/api/home/welcome/${userId}`,
@@ -59,6 +75,10 @@ export const fetchWelcomeData = async (userId: string): Promise<WelcomeResponse>
     
     const response = await api.get<WelcomeResponse>(`/api/home/welcome/${userId}`)
     console.log('Welcome API Response:', response.data)
+    
+    // Cache the response
+    await SecureStore.setItemAsync(`welcome_${userId}`, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error fetching welcome data:', {
@@ -80,8 +100,29 @@ export const fetchWelcomeData = async (userId: string): Promise<WelcomeResponse>
  */
 export const fetchProfile = async (userId: string): Promise<WelcomeUserInfo> => {
   try {
+    // Try to get cached profile first
+    const cachedProfile = await SecureStore.getItemAsync(`userProfile_${userId}`)
+    if (cachedProfile) {
+      console.log('Profile fetched from SecureStore cache')
+      const parsed = JSON.parse(cachedProfile)
+      // Return cached data but fetch fresh data in background
+      setTimeout(() => {
+        api.get<WelcomeUserInfo>(`/api/profile/${userId}`)
+          .then(response => {
+            SecureStore.setItemAsync(`userProfile_${userId}`, JSON.stringify(response.data))
+          })
+          .catch(() => {})
+      }, 0)
+      return parsed
+    }
+
+    // If not in cache, fetch from API
     const response = await api.get<WelcomeUserInfo>(`/api/profile/${userId}`)
     console.log('Profile API Response:', response.data)
+    
+    // Cache the response
+    await SecureStore.setItemAsync(`userProfile_${userId}`, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error fetching profile:', error)
@@ -103,6 +144,10 @@ export const updateProfile = async (userId: string, data: UpdateProfileRequest):
     const response = await api.put<WelcomeUserInfo>(`/api/profile/${userId}`, data)
     console.log('Update Profile API Response:', response.data)
     console.log('Response idNumber:', response.data.idNumber)
+    
+    // Update SecureStore cache
+    await SecureStore.setItemAsync(`userProfile_${userId}`, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error updating profile:', error)
@@ -502,6 +547,19 @@ export const deleteNotification = async (notificationId: string): Promise<void> 
   } catch (error: any) {
     console.error('Error deleting notification:', error)
     throw error
+  }
+}
+
+/**
+ * Clear all cached data for a user
+ */
+export const clearUserCache = async (userId: string): Promise<void> => {
+  try {
+    await SecureStore.deleteItemAsync(`userProfile_${userId}`)
+    await SecureStore.deleteItemAsync(`welcome_${userId}`)
+    console.log('User cache cleared successfully')
+  } catch (error: any) {
+    console.error('Error clearing user cache:', error)
   }
 }
 

@@ -201,6 +201,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await supabase.auth.signOut()
       // Clear stored email for PIN-based auth
       await SecureStore.deleteItemAsync('userEmail')
+      // Clear all cached profile data
+      if (user?.id) {
+        await SecureStore.deleteItemAsync(`userProfile_${user.id}`)
+        await SecureStore.deleteItemAsync(`welcome_${user.id}`)
+      }
       setSession(null)
       setUser(null)
     } catch (error) {
