@@ -3,7 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../src/contexts/AuthContext';
-import { createApplication, updateProfile } from '../../../src/lib/api';
+import { createApplication, createAppointment, updateProfile } from '../../../src/lib/api';
 
 export default function LearnersLicenceApplication() {
   const { user } = useAuth();
@@ -92,6 +92,7 @@ export default function LearnersLicenceApplication() {
       }
 
       // Create application in backend
+      let createdApplicationId: string | undefined;
       if (user?.id) {
         const applicationData = {
           fullName,
@@ -110,12 +111,38 @@ export default function LearnersLicenceApplication() {
           medical,
         };
 
-        await createApplication(user.id, {
+        const createdApp = await createApplication(user.id, {
           serviceType: 'Learners Licence Application',
           applicationData: JSON.stringify(applicationData),
         });
 
-        console.log('Learners licence application created successfully');
+        createdApplicationId = createdApp.id;
+        console.log('Learners licence application created successfully with ID:', createdApplicationId);
+      }
+
+      // Create appointment in backend
+      if (user?.id && createdApplicationId && selectedDate) {
+        const testingCenters = [
+          { name: 'Centurion Testing Centre', address: '1234 Heuwel Ave, Centurion, 0157' },
+          { name: 'Johannesburg Testing Centre', address: '789 Commissioner St, Johannesburg, 2001' },
+          { name: 'Cape Town Testing Centre', address: '456 Voortrekker Rd, Bellville, Cape Town, 7530' },
+        ];
+        
+        const randomCenter = testingCenters[Math.floor(Math.random() * testingCenters.length)];
+        
+        await createAppointment({
+          userId: user.id,
+          applicationId: createdApplicationId,
+          appointmentDate: selectedDate.toISOString(),
+          appointmentTime: timeSlot,
+          serviceType: 'Learners Licence Application',
+          location: randomCenter.name,
+          locationAddress: randomCenter.address,
+          status: 'Scheduled',
+          notes: 'Please bring: ID document or certified copy, eye test certificate (not older than 60 days), and proof of payment.',
+        });
+        
+        console.log('Appointment created successfully');
       }
 
       Alert.alert(

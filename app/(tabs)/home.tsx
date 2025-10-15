@@ -1,16 +1,19 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
+import { ActivityIndicator, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
-import { fetchWelcomeData, WelcomeResponse } from '../../src/lib/api'
+import { fetchWelcomeData, getActiveUserNotifications, Notification, WelcomeResponse } from '../../src/lib/api'
 
 export default function HomeScreen() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [welcomeData, setWelcomeData] = useState<WelcomeResponse | null>(null)
   const [loadingWelcome, setLoadingWelcome] = useState(true)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loadingNotifications, setLoadingNotifications] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   // Fetch welcome data from backend API
   useEffect(() => {
@@ -51,6 +54,67 @@ export default function HomeScreen() {
     loadWelcomeData()
   }, [user?.id, authLoading])
 
+  // Fetch notifications from backend API
+  const fetchNotifications = useCallback(async () => {
+    if (!user?.id) {
+      setLoadingNotifications(false)
+      return
+    }
+
+    try {
+      console.log('Fetching notifications for user:', user.id)
+      const data = await getActiveUserNotifications(user.id)
+      console.log('Received notifications:', data)
+      // Show only the first 3 notifications
+      setNotifications(data.slice(0, 3))
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+      setNotifications([])
+    } finally {
+      setLoadingNotifications(false)
+    }
+  }, [user?.id])
+
+  useEffect(() => {
+    if (authLoading) return
+    fetchNotifications()
+  }, [authLoading, fetchNotifications])
+
+  // Pull to refresh handler
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      // Refresh both welcome data and notifications
+      if (user?.id) {
+        await Promise.all([
+          fetchWelcomeData(user.id).then(data => setWelcomeData(data)).catch(() => {}),
+          fetchNotifications()
+        ])
+      }
+    } catch (error) {
+      console.error('Error refreshing:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }, [user?.id, fetchNotifications])
+
+  const getTimeAgo = (dateString: string): string => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMins / 60)
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffMins < 60) {
+      return diffMins <= 1 ? '1 minute ago' : `${diffMins} minutes ago`
+    } else if (diffHours < 24) {
+      return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`
+    } else {
+      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`
+    }
+  }
+
   const services = [
     {
       key: 'eHomeAffairs',
@@ -75,30 +139,6 @@ export default function HomeScreen() {
     },
   ] as const
 
-  const notifications = [
-    {
-      id: '1',
-      title: 'Smart ID Ready for Collection',
-      description: 'Your Smart ID is ready for collection at Sandton Home Affairs office',
-      time: '2 hours ago',
-      active: true,
-    },
-    {
-      id: '2',
-      title: 'Tax Return Processed',
-      description: 'Your tax return has been successfully processed. Refund expected in 5–7 days',
-      time: '1 day ago',
-      active: true,
-    },
-    {
-      id: '3',
-      title: 'Application Update',
-      description: 'Additional documents required for business license application',
-      time: '2 days ago',
-      active: false,
-    },
-  ] as const
-
   const contacts = [
     { id: 'c1', name: 'Home Affairs Office', dept: 'Sandton Branch', phone: '011 835 4500' },
     { id: 'c2', name: 'SARS Contact Center', dept: 'Tax Services', phone: '0800 00 7277' },
@@ -109,7 +149,18 @@ export default function HomeScreen() {
     <View style={styles.page}>
       <Header/>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        contentContainerStyle={{ paddingBottom: 100 }} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#27AE60']}
+            tintColor="#27AE60"
+          />
+        }
+      >
         {/* Welcome banner */}
         <View style={styles.welcomeCard}>
           <View style={styles.avatar}>
@@ -151,16 +202,28 @@ export default function HomeScreen() {
           <Link href={'/notifications' as any} style={styles.viewAll}>View All ▸</Link>
         </View>
 
-        {notifications.map((n) => (
-          <View key={n.id} style={styles.notificationCard}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-              {n.active && <View style={styles.dotActive} />}
-              <Text style={styles.notificationTitle}>{n.title}</Text>
-            </View>
-            <Text style={styles.notificationDesc}>{n.description}</Text>
-            <Text style={styles.notificationTime}>{n.time}</Text>
+        {loadingNotifications ? (
+          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
+            <ActivityIndicator size="small" color="#27AE60" />
+            <Text style={{ marginTop: 8, fontSize: 12, color: '#6B7280' }}>Loading notifications...</Text>
           </View>
-        ))}
+        ) : notifications.length === 0 ? (
+          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
+            <Ionicons name="notifications-off-outline" size={32} color="#ccc" />
+            <Text style={{ marginTop: 8, fontSize: 13, color: '#6B7280' }}>No notifications yet</Text>
+          </View>
+        ) : (
+          notifications.map((n) => (
+            <View key={n.id} style={styles.notificationCard}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                {!n.isRead && <View style={styles.dotActive} />}
+                <Text style={styles.notificationTitle}>{n.title}</Text>
+              </View>
+              <Text style={styles.notificationDesc}>{n.description}</Text>
+              <Text style={styles.notificationTime}>{getTimeAgo(n.createdAt)}</Text>
+            </View>
+          ))
+        )}
 
         {/* Contacts */}
         <Text style={styles.sectionTitle}>Contacts</Text>

@@ -295,4 +295,214 @@ export const getServicesByCategory = async (category: string): Promise<ServiceIn
   }
 }
 
+// ============================================
+// Appointments API
+// ============================================
+
+export interface Appointment {
+  id: string
+  userId: string
+  applicationId?: string
+  appointmentDate: string // ISO date string
+  appointmentTime?: string
+  serviceType: string
+  location?: string
+  locationAddress?: string
+  status: string // Scheduled, Completed, Cancelled, Rescheduled
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateAppointmentRequest {
+  userId: string
+  applicationId?: string
+  appointmentDate: string
+  appointmentTime?: string
+  serviceType: string
+  location?: string
+  locationAddress?: string
+  status?: string
+  notes?: string
+}
+
+/**
+ * Create a new appointment
+ */
+export const createAppointment = async (appointmentData: CreateAppointmentRequest): Promise<Appointment> => {
+  try {
+    const response = await api.post<Appointment>('/api/appointments', appointmentData)
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating appointment:', error)
+    throw error
+  }
+}
+
+/**
+ * Get all appointments for a user
+ */
+export const getUserAppointments = async (userId: string): Promise<Appointment[]> => {
+  try {
+    const response = await api.get<Appointment[]>(`/api/appointments/user/${userId}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching appointments:', error)
+    throw error
+  }
+}
+
+/**
+ * Get appointments by status
+ */
+export const getUserAppointmentsByStatus = async (userId: string, status: string): Promise<Appointment[]> => {
+  try {
+    const response = await api.get<Appointment[]>(`/api/appointments/user/${userId}/status/${status}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching appointments by status:', error)
+    throw error
+  }
+}
+
+/**
+ * Update appointment status
+ */
+export const updateAppointmentStatus = async (appointmentId: string, status: string): Promise<Appointment> => {
+  try {
+    const response = await api.patch<Appointment>(`/api/appointments/${appointmentId}/status`, { status })
+    return response.data
+  } catch (error: any) {
+    console.error('Error updating appointment status:', error)
+    throw error
+  }
+}
+
+// ============================================
+// Notification API Functions
+// ============================================
+
+export interface Notification {
+  id: string
+  userId: string
+  title: string
+  description: string
+  notificationType: string
+  relatedId?: string
+  isRead: boolean
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateNotificationRequest {
+  userId: string
+  title: string
+  description: string
+  notificationType: string
+  relatedId?: string
+}
+
+/**
+ * Create a new notification
+ */
+export const createNotification = async (notificationData: CreateNotificationRequest): Promise<Notification> => {
+  try {
+    const response = await api.post<Notification>('/api/notifications', notificationData)
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating notification:', error)
+    throw error
+  }
+}
+
+/**
+ * Get all notifications for a user
+ */
+export const getUserNotifications = async (userId: string): Promise<Notification[]> => {
+  try {
+    const response = await api.get<Notification[]>(`/api/notifications/user/${userId}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching notifications:', error)
+    throw error
+  }
+}
+
+/**
+ * Get active notifications for a user
+ */
+export const getActiveUserNotifications = async (userId: string): Promise<Notification[]> => {
+  try {
+    const response = await api.get<Notification[]>(`/api/notifications/user/${userId}/active`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching active notifications:', error)
+    throw error
+  }
+}
+
+/**
+ * Get unread notifications for a user
+ */
+export const getUnreadUserNotifications = async (userId: string): Promise<Notification[]> => {
+  try {
+    const response = await api.get<Notification[]>(`/api/notifications/user/${userId}/unread`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching unread notifications:', error)
+    throw error
+  }
+}
+
+/**
+ * Get unread notification count for a user
+ */
+export const getUnreadNotificationCount = async (userId: string): Promise<number> => {
+  try {
+    const response = await api.get<{ unreadCount: number }>(`/api/notifications/user/${userId}/unread-count`)
+    return response.data.unreadCount
+  } catch (error: any) {
+    console.error('Error fetching unread count:', error)
+    throw error
+  }
+}
+
+/**
+ * Mark notification as read
+ */
+export const markNotificationAsRead = async (notificationId: string): Promise<Notification> => {
+  try {
+    const response = await api.patch<Notification>(`/api/notifications/${notificationId}/read`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error marking notification as read:', error)
+    throw error
+  }
+}
+
+/**
+ * Mark all notifications as read for a user
+ */
+export const markAllNotificationsAsRead = async (userId: string): Promise<void> => {
+  try {
+    await api.patch(`/api/notifications/user/${userId}/read-all`)
+  } catch (error: any) {
+    console.error('Error marking all notifications as read:', error)
+    throw error
+  }
+}
+
+/**
+ * Delete a notification
+ */
+export const deleteNotification = async (notificationId: string): Promise<void> => {
+  try {
+    await api.delete(`/api/notifications/${notificationId}`)
+  } catch (error: any) {
+    console.error('Error deleting notification:', error)
+    throw error
+  }
+}
+
 export default api
