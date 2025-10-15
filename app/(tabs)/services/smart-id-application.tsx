@@ -3,7 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../src/contexts/AuthContext';
-import { createApplication, updateProfile } from '../../../src/lib/api';
+import { createApplication, createAppointment, updateProfile } from '../../../src/lib/api';
 
 export default function SmartIDApplication() {
   const { user } = useAuth();
@@ -86,6 +86,7 @@ export default function SmartIDApplication() {
       }
 
       // Create application in backend
+      let createdApplicationId: string | undefined;
       if (user?.id) {
         const applicationData = {
           name,
@@ -97,17 +98,44 @@ export default function SmartIDApplication() {
           hasPhoto: !!photoUri,
         };
 
-        await createApplication(user.id, {
+        const createdApp = await createApplication(user.id, {
           serviceType: 'Smart ID Card Application',
           applicationData: JSON.stringify(applicationData),
         });
 
-        console.log('Smart ID application created successfully');
+        createdApplicationId = createdApp.id;
+        console.log('Smart ID application created successfully with ID:', createdApplicationId);
       }
 
-      // In a real app, submit to API here. For now show a confirmation and assign an appointment.
+      // Generate and create appointment
       const assigned = generateRandomAppointment();
       setAppointment(assigned);
+      
+      // Create appointment in backend with location information
+      if (user?.id && createdApplicationId) {
+        const locations = [
+          { name: 'Pretoria Home Affairs Office', address: '230 Pretorius St, Pretoria Central, Pretoria, 0002' },
+          { name: 'Johannesburg Home Affairs Office', address: '44 Harrison St, Johannesburg, 2001' },
+          { name: 'Cape Town Home Affairs Office', address: '56 Barrack St, Cape Town City Centre, Cape Town, 8001' },
+        ];
+        
+        const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+        
+        await createAppointment({
+          userId: user.id,
+          applicationId: createdApplicationId,
+          appointmentDate: assigned.toISOString(),
+          appointmentTime: assigned.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          serviceType: 'Smart ID Card Application',
+          location: randomLocation.name,
+          locationAddress: randomLocation.address,
+          status: 'Scheduled',
+          notes: 'Please bring: Birth certificate, Parent/Guardian ID, and 2 passport-sized photos.',
+        });
+        
+        console.log('Appointment created successfully');
+      }
+      
       Alert.alert('Application submitted', `Thank you ${name} ${surname}. We received your application.\nYour appointment: ${assigned.toLocaleString()}`);
       
       // clear form

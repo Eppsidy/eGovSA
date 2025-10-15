@@ -26,10 +26,9 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     
     private final ApplicationDocumentRepository documentRepository;
-    
-    /**
-     * Create a new application
-     */
+
+    //Create a new application
+
     @Transactional
     public ApplicationDto createApplication(UUID userId, CreateApplicationRequest request) {
         Application application = new Application();
@@ -46,19 +45,17 @@ public class ApplicationService {
         return convertToDto(saved);
     }
     
-    /**
-     * Get all applications for a user
-     */
+    //Get all applications for a user
+
     public List<ApplicationDto> getUserApplications(UUID userId) {
         List<Application> applications = applicationRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return applications.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
-    
-    /**
-     * Get applications by status
-     */
+
+     //Get applications by status
+
     public List<ApplicationDto> getUserApplicationsByStatus(UUID userId, String status) {
         List<Application> applications = applicationRepository.findByUserIdAndStatus(userId, status);
         return applications.stream()
@@ -66,37 +63,33 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
     
-    /**
-     * Get applications by multiple statuses (for Active tab)
-     */
+    //Get applications by multiple statuses (for Active tab)
+
     public List<ApplicationDto> getUserApplicationsByStatuses(UUID userId, List<String> statuses) {
         List<Application> applications = applicationRepository.findByUserIdAndStatusIn(userId, statuses);
         return applications.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
-    
-    /**
-     * Get single application by ID
-     */
+
+     //Get single application by ID
+
     public ApplicationDto getApplicationById(UUID id) {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
         return convertToDto(application);
     }
     
-    /**
-     * Get application by reference number
-     */
+    //Get application by reference number
+
     public ApplicationDto getApplicationByReference(String referenceNumber) {
         Application application = applicationRepository.findByReferenceNumber(referenceNumber)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
         return convertToDto(application);
     }
     
-    /**
-     * Update application status
-     */
+    //Update application status
+
     @Transactional
     public ApplicationDto updateApplicationStatus(UUID id, String status, String currentStep) {
         Application application = applicationRepository.findById(id)
@@ -114,10 +107,9 @@ public class ApplicationService {
         Application updated = applicationRepository.save(application);
         return convertToDto(updated);
     }
-    
-    /**
-     * Add document to application
-     */
+
+     //Add document to application
+
     @Transactional
     public ApplicationDocumentDto addDocument(UUID applicationId, ApplicationDocumentDto documentDto) {
         ApplicationDocument document = new ApplicationDocument();
@@ -131,19 +123,18 @@ public class ApplicationService {
         return convertDocumentToDto(saved);
     }
     
-    /**
-     * Get documents for an application
-     */
+
+    //Get documents for an application
+
     public List<ApplicationDocumentDto> getApplicationDocuments(UUID applicationId) {
         List<ApplicationDocument> documents = documentRepository.findByApplicationId(applicationId);
         return documents.stream()
                 .map(this::convertDocumentToDto)
                 .collect(Collectors.toList());
     }
-    
-    /**
-     * Delete application
-     */
+
+     //Delete application
+
     @Transactional
     public void deleteApplication(UUID id) {
         documentRepository.deleteByApplicationId(id);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../../src/contexts/AuthContext'
-import { createApplication, updateProfile } from '../../../src/lib/api'
+import { createApplication, createAppointment, updateProfile } from '../../../src/lib/api'
 
 export default function PassportApplication() {
   const { user } = useAuth()
@@ -50,6 +50,7 @@ export default function PassportApplication() {
       }
 
       // Create application in backend
+      let createdApplicationId = null
       if (user?.id) {
         const applicationData = {
           firstName,
@@ -57,15 +58,41 @@ export default function PassportApplication() {
           idNumber,
         }
 
-        await createApplication(user.id, {
+        const application = await createApplication(user.id, {
           serviceType: 'Passport Application',
           applicationData: JSON.stringify(applicationData),
         })
 
+        createdApplicationId = application.id
         console.log('Passport application created successfully')
       }
 
       const assigned = generateRandomAppointment()
+      
+      // Create appointment in backend
+      if (user?.id && createdApplicationId) {
+        const locations = [
+          { name: 'Home Affairs - Johannesburg', address: '123 Main St, Johannesburg, 2000' },
+          { name: 'Home Affairs - Pretoria', address: '456 Church St, Pretoria, 0001' },
+          { name: 'Home Affairs - Cape Town', address: '789 Adderley St, Cape Town, 8001' },
+        ]
+        const randomLocation = locations[Math.floor(Math.random() * locations.length)]
+
+        await createAppointment({
+          userId: user.id,
+          applicationId: createdApplicationId,
+          appointmentDate: assigned.toISOString(),
+          appointmentTime: assigned.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          serviceType: 'Passport Application',
+          location: randomLocation.name,
+          locationAddress: randomLocation.address,
+          status: 'Scheduled',
+          notes: 'Please bring original ID document and passport photos',
+        })
+
+        console.log('Appointment created successfully')
+      }
+
       setAppointment(assigned)
       Alert.alert('Submitted', `Application submitted for ${firstName} ${lastName}.\nYour appointment: ${assigned.toLocaleString()}`)
       setFirstName(''); setLastName(''); setIdNumber('')

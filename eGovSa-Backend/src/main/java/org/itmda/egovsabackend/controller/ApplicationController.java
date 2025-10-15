@@ -30,11 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class ApplicationController {
     
     private final ApplicationService applicationService;
-    
-    /**
-     * Create new application
-     * POST /api/applications
-     */
+
     @PostMapping
     public ResponseEntity<ApplicationDto> createApplication(
             @RequestParam String userId,
@@ -48,11 +44,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get all applications for a user
-     * GET /api/applications/user/{userId}
-     */
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ApplicationDto>> getUserApplications(@PathVariable String userId) {
         try {
@@ -64,11 +56,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get applications by status
-     * GET /api/applications/user/{userId}/status/{status}
-     */
+
     @GetMapping("/user/{userId}/status/{status}")
     public ResponseEntity<List<ApplicationDto>> getUserApplicationsByStatus(
             @PathVariable String userId,
@@ -82,11 +70,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get applications by multiple statuses (for tabs like "Active")
-     * POST /api/applications/user/{userId}/statuses
-     */
+
     @PostMapping("/user/{userId}/statuses")
     public ResponseEntity<List<ApplicationDto>> getUserApplicationsByStatuses(
             @PathVariable String userId,
@@ -100,11 +84,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get single application by ID
-     * GET /api/applications/{id}
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<ApplicationDto> getApplicationById(@PathVariable String id) {
         try {
@@ -118,11 +98,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get application by reference number
-     * GET /api/applications/reference/{referenceNumber}
-     */
+
     @GetMapping("/reference/{referenceNumber}")
     public ResponseEntity<ApplicationDto> getApplicationByReference(@PathVariable String referenceNumber) {
         try {
@@ -135,11 +111,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Update application status
-     * PATCH /api/applications/{id}/status
-     */
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApplicationDto> updateApplicationStatus(
             @PathVariable String id,
@@ -158,11 +130,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Add document to application
-     * POST /api/applications/{applicationId}/documents
-     */
+
     @PostMapping("/{applicationId}/documents")
     public ResponseEntity<ApplicationDocumentDto> addDocument(
             @PathVariable String applicationId,
@@ -176,11 +144,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Get documents for an application
-     * GET /api/applications/{applicationId}/documents
-     */
+
     @GetMapping("/{applicationId}/documents")
     public ResponseEntity<List<ApplicationDocumentDto>> getApplicationDocuments(@PathVariable String applicationId) {
         try {
@@ -192,11 +156,7 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-     * Delete application
-     * DELETE /api/applications/{id}
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteApplication(@PathVariable String id) {
         try {
