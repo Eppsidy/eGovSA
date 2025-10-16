@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { fetchProfile, registerPushToken, updateNotificationSettings } from '../../src/lib/api'
@@ -193,10 +193,6 @@ export default function ProfileScreen() {
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Text style={styles.name}>{fullName}</Text>
-              <View style={styles.verifiedPill}>
-                <Ionicons name="checkmark-circle" size={14} color="#fff" />
-                <Text style={styles.verifiedText}>Verified</Text>
-              </View>
             </View>
             <View style={{ marginTop: 8, gap: 4 }}>
               {idNumber && <DetailRow icon="card-outline" label={`ID: ${idNumber}`} />}
@@ -208,10 +204,6 @@ export default function ProfileScreen() {
               {memberSince && <DetailRow icon="time-outline" label={`Member since ${memberSince}`} />}
             </View>
           </View>
-
-          <TouchableOpacity accessibilityRole="button" hitSlop={8} onPress={() => router.push('/profile/personal-info' as any)}>
-            <Ionicons name="pencil" size={18} color="#64748b" />
-          </TouchableOpacity>
         </View>
 
         {/* Account */}
@@ -243,7 +235,6 @@ export default function ProfileScreen() {
         <SectionTitle title="Services" />
         <View style={styles.cardList}>
           <ListItem icon="card-outline" title="Payment Methods" subtitle="Cards & bank accounts" onPress={() => router.push('/profile/payment-methods' as any)} />
-          <ListItem icon="location-outline" title="Addresses" subtitle="Home & business addresses" onPress={() => router.push('/profile/addresses' as any)} />
           <ListItem icon="calendar-outline" title="Appointments" subtitle="Scheduled visits" onPress={() => router.push('/profile/appointments' as any)} />
         </View>
 

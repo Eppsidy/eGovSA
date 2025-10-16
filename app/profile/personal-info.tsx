@@ -191,7 +191,7 @@ export default function PersonalInfoScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Gender</Text>
             <View style={styles.genderContainer}>
-              {['Male', 'Female', 'Other'].map((option) => (
+              {['Male', 'Female'].map((option) => (
                 <TouchableOpacity
                   key={option}
                   style={[
