@@ -25,7 +25,7 @@ const CATEGORIES: ServiceCategory[] = [
     agency: 'South African Revenue Service',
     status: 'Available',
     summary: 'File tax returns, manage tax accounts, and access SARS services online',
-    url: 'efiling.sars.gov.za',
+    url: 'https://secure.sarsefiling.co.za/landing',
     icon: 'document-text-outline',
     items: [
       { key: 'submit-income-tax-returns', name: 'Submit Income Tax Returns', hint: 'Available 24/7' },
@@ -40,7 +40,7 @@ const CATEGORIES: ServiceCategory[] = [
     status: 'Available',
     icon: 'home-outline',
     summary: 'Apply for identity documents, passports, and citizenship services',
-    url: 'ehomeaffairs.gov.za',
+    url: 'https://ehome.dha.gov.za/ehomeaffairsv3',
     items: [
       { key: 'smart-id-application', name: 'Smart ID Application', hint: '10-15 business days' },
       { key: 'passport-application', name: 'Passport Application', hint: '6-8 weeks' },
@@ -54,7 +54,7 @@ const CATEGORIES: ServiceCategory[] = [
     icon: 'car-outline',
     agency: 'National Traffic Information System',
     summary: 'Vehicle registration, licensing, and traffic fine management services',
-    url: 'enatis.com',
+    url: 'https://www.natis.gov.za',
     items: [
       { key: 'learners-licence-application', name: 'Learner’s Licence Application', hint: '5-7 business days' },
       { key: 'vehicle-registration', name: 'Vehicle Registration', hint: '3-5 business days' },
