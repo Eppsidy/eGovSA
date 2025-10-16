@@ -40,8 +40,13 @@
         }
       ],
       "expo-secure-store",
-      "expo-splash-screen\\",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "color": "#E67E22"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

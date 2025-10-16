@@ -1,5 +1,6 @@
 import * as Crypto from 'expo-crypto'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../src/contexts/AuthContext'
@@ -70,7 +71,11 @@ export default function PinSetupScreen() {
       }
       console.log('Profile upsert success:', upsertData);
       
-  updateUserProfile({ first_name: firstName, last_name: lastName, email }); 
+      // Store email for future PIN-based login
+      await SecureStore.setItemAsync('userEmail', email);
+      console.log('User email stored for PIN-based login:', email);
+      
+      updateUserProfile({ first_name: firstName, last_name: lastName, email }); 
       router.replace('/home') 
     } catch(e:any){ 
       console.error('Full error details:', e);

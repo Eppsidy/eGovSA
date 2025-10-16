@@ -1,16 +1,25 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useFocusEffect, useRouter } from 'expo-router'
-import React, { useCallback, useMemo, useState } from 'react'
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
-import { fetchProfile } from '../../src/lib/api'
+import { fetchProfile, registerPushToken, updateNotificationSettings } from '../../src/lib/api'
+import { checkNotificationPermissions, registerForPushNotificationsAsync } from '../../src/lib/pushNotifications'
 
 export default function ProfileScreen() {
   const { user, signOut, refreshUser } = useAuth()
   const router = useRouter()
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [updatingNotifications, setUpdatingNotifications] = useState(false)
+
+  // Initialize notification state from user profile
+  useEffect(() => {
+    if (user?.push_notifications_enabled !== undefined) {
+      setNotificationsEnabled(user.push_notifications_enabled)
+    }
+  }, [user?.push_notifications_enabled])
 
   // Refresh profile data when screen comes into focus
   useFocusEffect(
@@ -39,6 +48,76 @@ export default function ProfileScreen() {
     }
     setRefreshing(false)
   }, [user?.id])
+
+  const handleNotificationToggle = async (value: boolean) => {
+    if (!user?.id) {
+      Alert.alert('Error', 'User not found. Please log in again.')
+      return
+    }
+
+    setUpdatingNotifications(true)
+
+    try {
+      if (value) {
+        // Enabling notifications - request permission and register token
+        const hasPermission = await checkNotificationPermissions()
+        
+        if (!hasPermission) {
+          // Request permission (this will return null in Expo Go but won't crash)
+          const token = await registerForPushNotificationsAsync()
+          
+          if (!token) {
+            // Check if we're in Expo Go by looking for the warning message
+            const isExpoGo = process.env.EXPO_PUBLIC_APP_VARIANT !== 'development'
+            
+            Alert.alert(
+              isExpoGo ? 'Expo Go Limitation' : 'Permission Denied',
+              isExpoGo 
+                ? 'Push notifications are not supported in Expo Go (SDK 53+). The setting will be saved, but you need to use a development build to test push notifications. See PUSH_NOTIFICATIONS_SETUP.md for instructions.'
+                : 'Push notifications require permission. Please enable notifications in your device settings.',
+              [{ text: 'OK' }]
+            )
+            
+            // Still save the preference to the backend even if token registration failed
+            // This allows the setting to be ready when user installs a development build
+            await updateNotificationSettings(user.id, true)
+            setNotificationsEnabled(true)
+            await refreshUser()
+            setUpdatingNotifications(false)
+            return
+          }
+
+          // Register token with backend (only if we got a valid token)
+          await registerPushToken(user.id, token)
+        }
+
+        // Update notification setting
+        await updateNotificationSettings(user.id, true)
+        setNotificationsEnabled(true)
+        
+        Alert.alert('Success', 'Push notifications enabled successfully!')
+      } else {
+        // Disabling notifications
+        await updateNotificationSettings(user.id, false)
+        setNotificationsEnabled(false)
+        
+        Alert.alert('Success', 'Push notifications disabled.')
+      }
+
+      // Refresh user data
+      await refreshUser()
+    } catch (error: any) {
+      console.error('Error updating notification settings:', error)
+      Alert.alert(
+        'Error',
+        'Failed to update notification settings. Please try again.'
+      )
+      // Revert the toggle state
+      setNotificationsEnabled(!value)
+    } finally {
+      setUpdatingNotifications(false)
+    }
+  }
 
   const fullName = useMemo(() => {
     const fn = user?.first_name?.trim()
@@ -147,11 +226,12 @@ export default function ProfileScreen() {
           <ListItem
             icon="notifications-outline"
             title="Notifications"
-            subtitle="Manage your alerts"
+            subtitle={notificationsEnabled ? 'Push notifications enabled' : 'Push notifications disabled'}
             right={() => (
               <Switch
                 value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
+                onValueChange={handleNotificationToggle}
+                disabled={updatingNotifications}
                 trackColor={{ false: '#e5e7eb', true: '#f2dfc7ff' }}
                 thumbColor={notificationsEnabled ? '#E67E22' : '#9ca3af'}
               />

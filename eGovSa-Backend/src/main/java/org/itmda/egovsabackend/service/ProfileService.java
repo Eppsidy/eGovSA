@@ -63,6 +63,14 @@ public class ProfileService {
                         existingProfile.setProfilePhotoUrl(updatedProfile.getProfilePhotoUrl());
                     }
                     
+                    // Update notification settings
+                    if (updatedProfile.getPushNotificationsEnabled() != null) {
+                        existingProfile.setPushNotificationsEnabled(updatedProfile.getPushNotificationsEnabled());
+                    }
+                    if (updatedProfile.getPushToken() != null) {
+                        existingProfile.setPushToken(updatedProfile.getPushToken());
+                    }
+                    
                     // Update timestamp
                     existingProfile.setUpdatedAt(LocalDateTime.now());
                     

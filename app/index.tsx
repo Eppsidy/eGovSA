@@ -1,33 +1,41 @@
 import { useRouter } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import { useAuth } from '../src/contexts/AuthContext'
 
 export default function Index() {
   const router = useRouter()
-  const { session, user, loading, checkPinExists } = useAuth()
+  const { session, user, loading } = useAuth()
   const [hasChecked, setHasChecked] = useState(false)
 
   useEffect(() => {
     const decide = async () => {
       if (loading) return
+      
       try {
+        // If user is already logged in with full session, go to home
         if (session && user) {
           router.replace('/home')
           return
         }
-        if (await checkPinExists()) {
-          router.replace('/login/pin-login')
+        
+        // Check if user has logged in before (stored email means they set up PIN)
+        const storedEmail = await SecureStore.getItemAsync('userEmail')
+        if (storedEmail) {
+          // User has logged in before, go to PIN login
+          router.replace({ pathname: '/login/pin-login', params: { email: storedEmail } })
           return
         }
-        // New user – go to onboarding after splash delay
+        
+        // New user – show splash screen for a moment then go to onboarding
         setTimeout(() => router.replace('/login/get-started'), 1800)
       } finally {
         setHasChecked(true)
       }
     }
     decide()
-  }, [session, user, loading, router, checkPinExists])
+  }, [session, user, loading, router])
 
   // Splash UI (was SplashScreen)
   return (
