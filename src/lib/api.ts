@@ -25,6 +25,8 @@ export interface WelcomeUserInfo {
   idNumber?: string
   profilePhotoUrl?: string
   gender?: string
+  pushNotificationsEnabled?: boolean
+  pushToken?: string
 }
 
 export interface WelcomeResponse {
@@ -45,6 +47,8 @@ export interface UpdateProfileRequest {
   postalAddress?: string
   avatarUrl?: string
   profilePhotoUrl?: string
+  pushNotificationsEnabled?: boolean
+  pushToken?: string
 }
 
 /**
@@ -560,6 +564,168 @@ export const clearUserCache = async (userId: string): Promise<void> => {
     console.log('User cache cleared successfully')
   } catch (error: any) {
     console.error('Error clearing user cache:', error)
+  }
+}
+
+// ============================================
+// Payment Methods API
+// ============================================
+
+export interface PaymentMethod {
+  id: string
+  userId: string
+  methodType: string // 'card' or 'bank_account'
+  provider: string // e.g., 'Visa', 'Mastercard', 'FNB'
+  lastFour: string
+  cardholderName: string
+  expiryDate: string // Format: MM/YY
+  isDefault: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreatePaymentMethodRequest {
+  methodType: string
+  provider: string
+  lastFour: string
+  cardholderName: string
+  expiryDate: string
+  isDefault?: boolean
+}
+
+/**
+ * Create a new payment method
+ */
+export const createPaymentMethod = async (
+  userId: string, 
+  paymentMethodData: CreatePaymentMethodRequest
+): Promise<PaymentMethod> => {
+  try {
+    const response = await api.post<PaymentMethod>(
+      `/api/payment-methods/user/${userId}`, 
+      paymentMethodData
+    )
+    console.log('Create Payment Method Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating payment method:', error)
+    throw error
+  }
+}
+
+/**
+ * Get all payment methods for a user
+ */
+export const getUserPaymentMethods = async (userId: string): Promise<PaymentMethod[]> => {
+  try {
+    const response = await api.get<PaymentMethod[]>(`/api/payment-methods/user/${userId}`)
+    console.log('User Payment Methods Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching payment methods:', error)
+    throw error
+  }
+}
+
+/**
+ * Get a specific payment method by ID
+ */
+export const getPaymentMethodById = async (id: string): Promise<PaymentMethod> => {
+  try {
+    const response = await api.get<PaymentMethod>(`/api/payment-methods/${id}`)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching payment method:', error)
+    throw error
+  }
+}
+
+/**
+ * Update a payment method
+ */
+export const updatePaymentMethod = async (
+  id: string, 
+  paymentMethodData: CreatePaymentMethodRequest
+): Promise<PaymentMethod> => {
+  try {
+    const response = await api.put<PaymentMethod>(
+      `/api/payment-methods/${id}`, 
+      paymentMethodData
+    )
+    console.log('Update Payment Method Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error updating payment method:', error)
+    throw error
+  }
+}
+
+/**
+ * Delete a payment method
+ */
+export const deletePaymentMethod = async (id: string): Promise<void> => {
+  try {
+    await api.delete(`/api/payment-methods/${id}`)
+    console.log('Payment method deleted successfully')
+  } catch (error: any) {
+    console.error('Error deleting payment method:', error)
+    throw error
+  }
+}
+
+/**
+ * Set a payment method as default
+ */
+export const setPaymentMethodAsDefault = async (id: string): Promise<PaymentMethod> => {
+  try {
+    const response = await api.patch<PaymentMethod>(`/api/payment-methods/${id}/set-default`)
+    console.log('Set Default Payment Method Response:', response.data)
+    return response.data
+  } catch (error: any) {
+    console.error('Error setting default payment method:', error)
+    throw error
+  }
+}
+
+// ============================================
+// Notification Settings API
+// ============================================
+
+/**
+ * Update notification settings (push notifications enabled/disabled)
+ */
+export const updateNotificationSettings = async (
+  userId: string,
+  enabled: boolean,
+  pushToken?: string
+): Promise<WelcomeUserInfo> => {
+  try {
+    const data: UpdateProfileRequest = {
+      pushNotificationsEnabled: enabled,
+    }
+    if (pushToken) {
+      data.pushToken = pushToken
+    }
+    const response = await updateProfile(userId, data)
+    console.log('Notification settings updated:', { enabled, hasPushToken: !!pushToken })
+    return response
+  } catch (error: any) {
+    console.error('Error updating notification settings:', error)
+    throw error
+  }
+}
+
+/**
+ * Register push notification token
+ */
+export const registerPushToken = async (userId: string, pushToken: string): Promise<WelcomeUserInfo> => {
+  try {
+    const response = await updateProfile(userId, { pushToken })
+    console.log('Push token registered:', pushToken)
+    return response
+  } catch (error: any) {
+    console.error('Error registering push token:', error)
+    throw error
   }
 }
 

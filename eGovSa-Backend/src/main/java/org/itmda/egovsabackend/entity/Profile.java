@@ -69,4 +69,10 @@ public class Profile {
 
     @Column(name = "gender")
     private String gender;
+
+    @Column(name = "push_notifications_enabled")
+    private Boolean pushNotificationsEnabled;
+
+    @Column(name = "push_token")
+    private String pushToken;
 }

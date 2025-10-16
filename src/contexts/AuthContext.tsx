@@ -19,6 +19,8 @@ export interface UserProfile {
   id_number?: string
   profile_photo_url?: string
   gender?: string
+  push_notifications_enabled?: boolean
+  push_token?: string
 }
 
 
