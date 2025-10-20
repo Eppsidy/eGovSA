@@ -58,7 +58,7 @@ export const fetchWelcomeData = async (userId: string): Promise<WelcomeResponse>
   try {
     const cachedWelcome = await SecureStore.getItemAsync(`welcome_${userId}`)
     if (cachedWelcome) {
-      console.log('Welcome data fetched from SecureStore cache')
+      // console.log('Welcome data fetched from SecureStore cache')
       const parsed = JSON.parse(cachedWelcome)
       // Return cached data but fetch fresh data in background
       setTimeout(() => {
@@ -71,14 +71,14 @@ export const fetchWelcomeData = async (userId: string): Promise<WelcomeResponse>
       return parsed
     }
 
-    console.log('API Configuration:', {
-      baseURL: API_BASE_URL,
-      endpoint: `/api/home/welcome/${userId}`,
-      fullURL: `${API_BASE_URL}/api/home/welcome/${userId}`,
-    })
+    // console.log('API Configuration:', {
+    //   baseURL: API_BASE_URL,
+    //   endpoint: `/api/home/welcome/${userId}`,
+    //   fullURL: `${API_BASE_URL}/api/home/welcome/${userId}`,
+    // })
     
     const response = await api.get<WelcomeResponse>(`/api/home/welcome/${userId}`)
-    console.log('Welcome API Response:', response.data)
+    // console.log('Welcome API Response:', response.data)
     
     // Cache the response
     await SecureStore.setItemAsync(`welcome_${userId}`, JSON.stringify(response.data))
@@ -107,7 +107,7 @@ export const fetchProfile = async (userId: string): Promise<WelcomeUserInfo> => 
     // Try to get cached profile first
     const cachedProfile = await SecureStore.getItemAsync(`userProfile_${userId}`)
     if (cachedProfile) {
-      console.log('Profile fetched from SecureStore cache')
+      // console.log('Profile fetched from SecureStore cache')
       const parsed = JSON.parse(cachedProfile)
       // Return cached data but fetch fresh data in background
       setTimeout(() => {
@@ -122,7 +122,7 @@ export const fetchProfile = async (userId: string): Promise<WelcomeUserInfo> => 
 
     // If not in cache, fetch from API
     const response = await api.get<WelcomeUserInfo>(`/api/profile/${userId}`)
-    console.log('Profile API Response:', response.data)
+    // console.log('Profile API Response:', response.data)
     
     // Cache the response
     await SecureStore.setItemAsync(`userProfile_${userId}`, JSON.stringify(response.data))
@@ -139,15 +139,15 @@ export const fetchProfile = async (userId: string): Promise<WelcomeUserInfo> => 
  */
 export const updateProfile = async (userId: string, data: UpdateProfileRequest): Promise<WelcomeUserInfo> => {
   try {
-    console.log('API updateProfile called with:', {
-      userId,
-      data,
-      idNumber: data.idNumber,
-      phone: data.phone
-    })
+    // console.log('API updateProfile called with:', {
+    //   userId,
+    //   data,
+    //   idNumber: data.idNumber,
+    //   phone: data.phone
+    // })
     const response = await api.put<WelcomeUserInfo>(`/api/profile/${userId}`, data)
-    console.log('Update Profile API Response:', response.data)
-    console.log('Response idNumber:', response.data.idNumber)
+    // console.log('Update Profile API Response:', response.data)
+    // console.log('Response idNumber:', response.data.idNumber)
     
     // Update SecureStore cache
     await SecureStore.setItemAsync(`userProfile_${userId}`, JSON.stringify(response.data))
@@ -201,7 +201,7 @@ export interface CreateApplicationRequest {
 export const createApplication = async (userId: string, request: CreateApplicationRequest): Promise<Application> => {
   try {
     const response = await api.post<Application>(`/api/applications?userId=${userId}`, request)
-    console.log('Create Application Response:', response.data)
+    // console.log('Create Application Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error creating application:', error)
@@ -215,7 +215,7 @@ export const createApplication = async (userId: string, request: CreateApplicati
 export const getUserApplications = async (userId: string): Promise<Application[]> => {
   try {
     const response = await api.get<Application[]>(`/api/applications/user/${userId}`)
-    console.log('User Applications Response:', response.data)
+    // console.log('User Applications Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error fetching applications:', error)
@@ -561,7 +561,7 @@ export const clearUserCache = async (userId: string): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(`userProfile_${userId}`)
     await SecureStore.deleteItemAsync(`welcome_${userId}`)
-    console.log('User cache cleared successfully')
+    // console.log('User cache cleared successfully')
   } catch (error: any) {
     console.error('Error clearing user cache:', error)
   }
@@ -605,7 +605,7 @@ export const createPaymentMethod = async (
       `/api/payment-methods/user/${userId}`, 
       paymentMethodData
     )
-    console.log('Create Payment Method Response:', response.data)
+    // console.log('Create Payment Method Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error creating payment method:', error)
@@ -619,7 +619,7 @@ export const createPaymentMethod = async (
 export const getUserPaymentMethods = async (userId: string): Promise<PaymentMethod[]> => {
   try {
     const response = await api.get<PaymentMethod[]>(`/api/payment-methods/user/${userId}`)
-    console.log('User Payment Methods Response:', response.data)
+    // console.log('User Payment Methods Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error fetching payment methods:', error)
@@ -652,7 +652,7 @@ export const updatePaymentMethod = async (
       `/api/payment-methods/${id}`, 
       paymentMethodData
     )
-    console.log('Update Payment Method Response:', response.data)
+    // console.log('Update Payment Method Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error updating payment method:', error)
@@ -666,7 +666,7 @@ export const updatePaymentMethod = async (
 export const deletePaymentMethod = async (id: string): Promise<void> => {
   try {
     await api.delete(`/api/payment-methods/${id}`)
-    console.log('Payment method deleted successfully')
+    // console.log('Payment method deleted successfully')
   } catch (error: any) {
     console.error('Error deleting payment method:', error)
     throw error
@@ -679,7 +679,7 @@ export const deletePaymentMethod = async (id: string): Promise<void> => {
 export const setPaymentMethodAsDefault = async (id: string): Promise<PaymentMethod> => {
   try {
     const response = await api.patch<PaymentMethod>(`/api/payment-methods/${id}/set-default`)
-    console.log('Set Default Payment Method Response:', response.data)
+    // console.log('Set Default Payment Method Response:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Error setting default payment method:', error)
@@ -707,7 +707,7 @@ export const updateNotificationSettings = async (
       data.pushToken = pushToken
     }
     const response = await updateProfile(userId, data)
-    console.log('Notification settings updated:', { enabled, hasPushToken: !!pushToken })
+    // console.log('Notification settings updated:', { enabled, hasPushToken: !!pushToken })
     return response
   } catch (error: any) {
     console.error('Error updating notification settings:', error)
@@ -721,7 +721,7 @@ export const updateNotificationSettings = async (
 export const registerPushToken = async (userId: string, pushToken: string): Promise<WelcomeUserInfo> => {
   try {
     const response = await updateProfile(userId, { pushToken })
-    console.log('Push token registered:', pushToken)
+    // console.log('Push token registered:', pushToken)
     return response
   } catch (error: any) {
     console.error('Error registering push token:', error)

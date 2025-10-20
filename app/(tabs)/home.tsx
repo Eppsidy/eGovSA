@@ -18,22 +18,22 @@ export default function HomeScreen() {
 
   // Fetch welcome data from backend API
   useEffect(() => {
-    console.log('Home screen mounted, user state:', { 
-      hasUser: !!user, 
-      userId: user?.id,
-      firstName: user?.first_name,
-      authLoading 
-    })
+    // console.log('Home screen mounted, user state:', { 
+    //   hasUser: !!user, 
+    //   userId: user?.id,
+    //   firstName: user?.first_name,
+    //   authLoading 
+    // })
 
     const loadWelcomeData = async () => {
       // Wait for auth to finish loading
       if (authLoading) {
-        console.log('Auth still loading, waiting...')
+        // console.log('Auth still loading, waiting...')
         return
       }
 
       if (user?.id) {
-        console.log('Calling fetchWelcomeData and fetchProfile with user ID:', user.id)
+        // console.log('Calling fetchWelcomeData and fetchProfile with user ID:', user.id)
         try {
           setLoadingWelcome(true)
           // Fetch both welcome data and profile data from cache/API
@@ -41,8 +41,8 @@ export default function HomeScreen() {
             fetchWelcomeData(user.id),
             fetchProfile(user.id)
           ])
-          console.log('Received welcome data:', welcomeResponse)
-          console.log('Received profile data:', profileResponse)
+          // console.log('Received welcome data:', welcomeResponse)
+          // console.log('Received profile data:', profileResponse)
           setWelcomeData(welcomeResponse)
           setProfileData(profileResponse)
         } catch (error) {
@@ -54,7 +54,7 @@ export default function HomeScreen() {
           setLoadingWelcome(false)
         }
       } else {
-        console.log('⚠️ No user ID available, user not logged in')
+        // console.log('⚠️ No user ID available, user not logged in')
         setLoadingWelcome(false)
       }
     }
@@ -70,9 +70,9 @@ export default function HomeScreen() {
     }
 
     try {
-      console.log('Fetching notifications for user:', user.id)
+      // console.log('Fetching notifications for user:', user.id)
       const data = await getActiveUserNotifications(user.id)
-      console.log('Received notifications:', data)
+      // console.log('Received notifications:', data)
       // Show only the first 3 notifications
       setNotifications(data.slice(0, 3))
     } catch (error) {
@@ -101,7 +101,7 @@ export default function HomeScreen() {
         ])
       }
     } catch (error) {
-      console.error('Error refreshing:', error)
+      // console.error('Error refreshing:', error)
     } finally {
       setRefreshing(false)
     }

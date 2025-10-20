@@ -43,7 +43,7 @@ export default function PinSetupScreen() {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       
       if (userError) {
-        console.error('Error getting user:', userError);
+        // console.error('Error getting user:', userError);
         throw new Error('Failed to get user information');
       }
       
@@ -51,8 +51,8 @@ export default function PinSetupScreen() {
         throw new Error('User ID not found');
       }
       
-      console.log('Attempting to save user profile for user ID:', userData.user.id);
-      console.log('Profile data:', { id: userData.user.id, first_name: firstName, last_name: lastName, email });
+      // console.log('Attempting to save user profile for user ID:', userData.user.id);
+      // console.log('Profile data:', { id: userData.user.id, first_name: firstName, last_name: lastName, email });
       
       const { data: upsertData, error } = await supabase
         .from('profiles')
@@ -61,24 +61,24 @@ export default function PinSetupScreen() {
         .maybeSingle();
       
       if (error) {
-        console.error('Database error:', {
-          message: error.message,
-          details: (error as any).details,
-          hint: (error as any).hint,
-          code: (error as any).code,
-        });
+        // console.error('Database error:', {
+        //   message: error.message,
+        //   details: (error as any).details,
+        //   hint: (error as any).hint,
+        //   code: (error as any).code,
+        // });
         throw new Error(error.message);
       }
-      console.log('Profile upsert success:', upsertData);
+      // console.log('Profile upsert success:', upsertData);
       
       // Store email for future PIN-based login
       await SecureStore.setItemAsync('userEmail', email);
-      console.log('User email stored for PIN-based login:', email);
+      // console.log('User email stored for PIN-based login:', email);
       
       updateUserProfile({ first_name: firstName, last_name: lastName, email }); 
       router.replace('/home') 
     } catch(e:any){ 
-      console.error('Full error details:', e);
+      // console.error('Full error details:', e);
       Alert.alert('Database error saving new user', e.message || 'Unknown error occurred') 
     } finally { 
       setSaving(false) 

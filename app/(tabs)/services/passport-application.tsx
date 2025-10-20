@@ -44,7 +44,7 @@ export default function PassportApplication() {
 
         // Only call API if there's data to update
         if (Object.keys(updateData).length > 0) {
-          console.log('Updating profile with missing data:', updateData)
+          // console.log('Updating profile with missing data:', updateData)
           await updateProfile(user.id, updateData)
         }
       }
@@ -64,7 +64,7 @@ export default function PassportApplication() {
         })
 
         createdApplicationId = application.id
-        console.log('Passport application created successfully')
+        // console.log('Passport application created successfully')
       }
 
       const assigned = generateRandomAppointment()
@@ -90,7 +90,7 @@ export default function PassportApplication() {
           notes: 'Please bring original ID document and passport photos',
         })
 
-        console.log('Appointment created successfully')
+        // console.log('Appointment created successfully')
       }
 
       setAppointment(assigned)

@@ -24,7 +24,7 @@ export default function ProfileScreen() {
   // Refresh profile data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      console.log('Profile screen focused - refreshing user data')
+      // console.log('Profile screen focused - refreshing user data')
       refreshUser()
       // Also fetch from backend to ensure we have latest data
       if (user?.id) {
@@ -123,25 +123,25 @@ export default function ProfileScreen() {
     const fn = user?.first_name?.trim()
     const ln = user?.last_name?.trim()
     const name = [fn, ln].filter(Boolean).join(' ')
-    console.log('Profile: fullName computed:', { fn, ln, name, fullName: user?.full_name })
+    // console.log('Profile: fullName computed:', { fn, ln, name, fullName: user?.full_name })
     return name || user?.full_name || 'User'
   }, [user])
 
   const idNumber = useMemo(() => {
-    console.log('Profile: idNumber from user:', user?.id_number)
+    // console.log('Profile: idNumber from user:', user?.id_number)
     return user?.id_number || null
   }, [user])
 
   const email = user?.email || null
   const phone = user?.phone || null
   
-  console.log('Profile: user data:', { 
-    email, 
-    phone, 
-    id_number: user?.id_number,
-    gender: user?.gender,
-    dateOfBirth: user?.date_of_birth 
-  })
+  // console.log('Profile: user data:', { 
+  //   email, 
+  //   phone, 
+  //   id_number: user?.id_number,
+  //   gender: user?.gender,
+  //   dateOfBirth: user?.date_of_birth 
+  // })
   const gender = user?.gender || null
   const dateOfBirth = user?.date_of_birth || null
   const residentialAddress = user?.residential_address || null

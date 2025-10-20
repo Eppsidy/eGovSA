@@ -47,26 +47,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    console.log('AuthContext: Initializing...')
+    // console.log('AuthContext: Initializing...')
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log('AuthContext: Session fetched:', { 
-        hasSession: !!session, 
-        userId: session?.user?.id 
-      })
+      // console.log('AuthContext: Session fetched:', { 
+      //   hasSession: !!session, 
+      //   userId: session?.user?.id 
+      // })
       setSession(session)
       if (session?.user) {
         await fetchUserProfile(session.user.id)
       } else {
-        console.log('AuthContext: No session found, checking for stored email...')
+        // console.log('AuthContext: No session found, checking for stored email...')
         // Try to fetch user profile using stored email (for PIN-based auth)
         try {
           const storedEmail = await SecureStore.getItemAsync('userEmail')
-          console.log('AuthContext: Stored email check result:', { storedEmail })
+          // console.log('AuthContext: Stored email check result:', { storedEmail })
           if (storedEmail) {
-            console.log('AuthContext: Found stored email, fetching profile...')
+            // console.log('AuthContext: Found stored email, fetching profile...')
             await fetchUserProfileByEmail(storedEmail)
           } else {
-            console.log('AuthContext: No stored email found')
+            // console.log('AuthContext: No stored email found')
             setLoading(false)
           }
         } catch (error) {
@@ -81,16 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('AuthContext: Auth state changed:', { 
-        event: _event, 
-        hasSession: !!session,
-        isInitialMount: isInitialMount.current,
-        isExplicitSignOut: isExplicitSignOut.current
-      })
+      // console.log('AuthContext: Auth state changed:', { 
+      //   event: _event, 
+      //   hasSession: !!session,
+      //   isInitialMount: isInitialMount.current,
+      //   isExplicitSignOut: isExplicitSignOut.current
+      // })
       
       // Skip the initial SIGNED_OUT event that fires on mount
       if (isInitialMount.current) {
-        console.log('AuthContext: Skipping auth change - initial mount')
+        // console.log('AuthContext: Skipping auth change - initial mount')
         return
       }
       
@@ -100,21 +100,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // No session - only clear user if this was an explicit sign-out
         if (_event === 'SIGNED_OUT' && isExplicitSignOut.current) {
-          console.log('AuthContext: User explicitly signed out, clearing state')
+          // console.log('AuthContext: User explicitly signed out, clearing state')
           isExplicitSignOut.current = false // Reset flag FIRST
           setUser(null)
           setLoading(false)
         } else {
           // Check for stored email (PIN-based auth)
-          console.log('AuthContext: No session after auth change, checking stored email...')
+          // console.log('AuthContext: No session after auth change, checking stored email...')
           try {
             const storedEmail = await SecureStore.getItemAsync('userEmail')
-            console.log('AuthContext: Stored email check:', { storedEmail })
+            // console.log('AuthContext: Stored email check:', { storedEmail })
             if (storedEmail) {
-              console.log('AuthContext: Found stored email after auth change, fetching profile...')
+              // console.log('AuthContext: Found stored email after auth change, fetching profile...')
               await fetchUserProfileByEmail(storedEmail)
             } else {
-              console.log('AuthContext: No stored email after auth change')
+              // console.log('AuthContext: No stored email after auth change')
               setUser(null)
               setLoading(false)
             }
@@ -132,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      console.log('AuthContext: Fetching profile for user:', userId)
+      // console.log('AuthContext: Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -142,15 +142,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         console.error('AuthContext: Error fetching profile:', error)
       } else {
-        console.log('AuthContext: Profile fetched successfully:', {
-          id: data.id,
-          firstName: data.first_name,
-          email: data.email,
-          phone: data.phone,
-          id_number: data.id_number,
-          gender: data.gender,
-          allFields: data
-        })
+        // console.log('AuthContext: Profile fetched successfully:', {
+        //   id: data.id,
+        //   firstName: data.first_name,
+        //   email: data.email,
+        //   phone: data.phone,
+        //   id_number: data.id_number,
+        //   gender: data.gender,
+        //   allFields: data
+        // })
         setUser(data)
       }
     } catch (error) {
@@ -162,33 +162,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserProfileByEmail = async (email: string) => {
     try {
-      console.log('AuthContext: Fetching profile by email:', email)
+      // console.log('AuthContext: Fetching profile by email:', email)
       
       // Use RPC function which has SECURITY DEFINER to bypass RLS
       const { data, error } = await supabase
         .rpc('get_profile_by_email', { p_email: email })
         .maybeSingle()
 
-      console.log('AuthContext: RPC query response:', { data, error, hasData: !!data })
+      // console.log('AuthContext: RPC query response:', { data, error, hasData: !!data })
 
       if (error) {
         console.error('AuthContext: Error fetching profile by email:', error)
       } else if (data) {
-        console.log('AuthContext: Profile fetched successfully by email:', {
-          id: (data as any).id,
-          firstName: (data as any).first_name,
-          email: (data as any).email,
-          phone: (data as any).phone,
-          id_number: (data as any).id_number,
-          gender: (data as any).gender,
-          date_of_birth: (data as any).date_of_birth,
-          residential_address: (data as any).residential_address,
-          allFields: data
-        })
+        // console.log('AuthContext: Profile fetched successfully by email:', {
+        //   id: (data as any).id,
+        //   firstName: (data as any).first_name,
+        //   email: (data as any).email,
+        //   phone: (data as any).phone,
+        //   id_number: (data as any).id_number,
+        //   gender: (data as any).gender,
+        //   date_of_birth: (data as any).date_of_birth,
+        //   residential_address: (data as any).residential_address,
+        //   allFields: data
+        // })
         setUser(data as UserProfile)
       } else {
-        console.log('AuthContext: No profile found for email:', email)
-        console.log('AuthContext: This may indicate the RPC function needs to be created/updated in Supabase')
+        // console.log('AuthContext: No profile found for email:', email)
+        // console.log('AuthContext: This may indicate the RPC function needs to be created/updated in Supabase')
       }
     } catch (error) {
       console.error('AuthContext: Exception fetching profile by email:', error)
@@ -252,14 +252,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const refreshUser = async () => {
-    console.log('AuthContext: Manual refresh requested')
+    // console.log('AuthContext: Manual refresh requested')
     try {
       const storedEmail = await SecureStore.getItemAsync('userEmail')
       if (storedEmail) {
-        console.log('AuthContext: Refreshing user with stored email:', storedEmail)
+        // console.log('AuthContext: Refreshing user with stored email:', storedEmail)
         await fetchUserProfileByEmail(storedEmail)
       } else {
-        console.log('AuthContext: No stored email for refresh')
+        // console.log('AuthContext: No stored email for refresh')
       }
     } catch (error) {
       console.error('AuthContext: Error refreshing user:', error)

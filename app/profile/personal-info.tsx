@@ -49,7 +49,7 @@ export default function PersonalInfoScreen() {
       })
       setLoading(false)
     } catch (error) {
-      console.error('Failed to load profile:', error)
+      // console.error('Failed to load profile:', error)
       Alert.alert('Error', 'Failed to load profile data')
       setLoading(false)
     }
@@ -73,12 +73,12 @@ export default function PersonalInfoScreen() {
         fullName: `${formData.firstName} ${formData.lastName}`.trim(),
       }
 
-      console.log('Sending update to backend:', updateData)
-      console.log('ID Number being sent:', formData.idNumber)
+      // console.log('Sending update to backend:', updateData)
+      // console.log('ID Number being sent:', formData.idNumber)
 
       await updateProfile(user.id, updateData)
       
-      console.log('Profile updated via backend, refreshing from Supabase...')
+      // console.log('Profile updated via backend, refreshing from Supabase...')
       
       // Wait a moment for the database to reflect changes
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -86,13 +86,13 @@ export default function PersonalInfoScreen() {
       // Refresh the user data from Supabase to get the updated profile
       await refreshUser()
       
-      console.log('Profile refresh complete')
+      // console.log('Profile refresh complete')
       
       Alert.alert('Success', 'Profile updated successfully', [
         { text: 'OK', onPress: () => router.back() }
       ])
     } catch (error) {
-      console.error('Failed to update profile:', error)
+      // console.error('Failed to update profile:', error)
       Alert.alert('Error', 'Failed to update profile. Please try again.')
     } finally {
       setSaving(false)
@@ -217,7 +217,7 @@ export default function PersonalInfoScreen() {
               style={styles.input}
               value={formData.idNumber}
               onChangeText={(text) => {
-                console.log('ID Number input changed to:', text)
+                // console.log('ID Number input changed to:', text)
                 setFormData({ ...formData, idNumber: text })
               }}
               placeholder="Enter ID number"

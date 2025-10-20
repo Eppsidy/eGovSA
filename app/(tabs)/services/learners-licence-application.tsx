@@ -86,7 +86,7 @@ export default function LearnersLicenceApplication() {
 
         // Only call API if there's data to update
         if (Object.keys(updateData).length > 0) {
-          console.log('Updating profile with missing data:', updateData);
+          // console.log('Updating profile with missing data:', updateData);
           await updateProfile(user.id, updateData);
         }
       }
@@ -117,7 +117,7 @@ export default function LearnersLicenceApplication() {
         });
 
         createdApplicationId = createdApp.id;
-        console.log('Learners licence application created successfully with ID:', createdApplicationId);
+        // console.log('Learners licence application created successfully with ID:', createdApplicationId);
       }
 
       // Create appointment in backend
@@ -142,7 +142,7 @@ export default function LearnersLicenceApplication() {
           notes: 'Please bring: ID document or certified copy, eye test certificate (not older than 60 days), and proof of payment.',
         });
         
-        console.log('Appointment created successfully');
+        // console.log('Appointment created successfully');
       }
 
       Alert.alert(

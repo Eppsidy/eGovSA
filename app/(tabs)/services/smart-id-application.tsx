@@ -80,7 +80,7 @@ export default function SmartIDApplication() {
 
         // Only call API if there's data to update
         if (Object.keys(updateData).length > 0) {
-          console.log('Updating profile with missing data:', updateData);
+          // console.log('Updating profile with missing data:', updateData);
           await updateProfile(user.id, updateData);
         }
       }
@@ -104,7 +104,7 @@ export default function SmartIDApplication() {
         });
 
         createdApplicationId = createdApp.id;
-        console.log('Smart ID application created successfully with ID:', createdApplicationId);
+        // console.log('Smart ID application created successfully with ID:', createdApplicationId);
       }
 
       // Generate and create appointment
@@ -133,7 +133,7 @@ export default function SmartIDApplication() {
           notes: 'Please bring: Birth certificate, Parent/Guardian ID, and 2 passport-sized photos.',
         });
         
-        console.log('Appointment created successfully');
+        // console.log('Appointment created successfully');
       }
       
       Alert.alert('Application submitted', `Thank you ${name} ${surname}. We received your application.\nYour appointment: ${assigned.toLocaleString()}`);
@@ -142,7 +142,7 @@ export default function SmartIDApplication() {
       setName(''); setSurname(''); setDob(''); setGender('');
       setBirthCertUri(null); setParentIdUri(null); setPhotoUri(null);
     } catch (error) {
-      console.error('Error submitting application:', error);
+      // console.error('Error submitting application:', error);
       Alert.alert('Error', 'Failed to submit application. Please try again.');
     } finally {
       setLoading(false);

@@ -22,21 +22,21 @@ export default function PinLoginScreen() {
         const hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, entered)
         const { data, error } = await supabase.rpc('verify_pin', { p_email: String(email), p_pin_hash: hash })
         if (error) {
-          console.error('verify_pin RPC error:', error)
+          // console.error('verify_pin RPC error:', error)
           Alert.alert('Login error', 'Unable to verify your PIN at the moment. Please try again.')
           return
         }
         if (data === true) {
           // PIN verified - store email in SecureStore for session-less access
-          console.log('PIN verified, storing email:', String(email))
+          // console.log('PIN verified, storing email:', String(email))
           await SecureStore.setItemAsync('userEmail', String(email))
           
           // Verify it was stored
           const storedEmail = await SecureStore.getItemAsync('userEmail')
-          console.log('Email stored and verified:', storedEmail)
+          // console.log('Email stored and verified:', storedEmail)
           
           // Manually refresh user profile - this will fetch and cache the profile
-          console.log('Triggering manual user refresh...')
+          // console.log('Triggering manual user refresh...')
           await refreshUser()
           router.replace('/home')
         } else {
@@ -56,7 +56,7 @@ export default function PinLoginScreen() {
         }
       }
     } catch (e) {
-      console.error('PIN submit error:', e)
+      // console.error('PIN submit error:', e)
       Alert.alert('Error', 'Something went wrong while verifying your PIN')
     }
   }
