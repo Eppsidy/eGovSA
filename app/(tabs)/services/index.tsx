@@ -102,8 +102,8 @@ export default function ServicesScreen() {
 
           <Text style={styles.sectionLabel}>Available Services:</Text>
 
-          {cat.items.map((svc, i) => (
-            <View key={svc.key} style={[styles.serviceRow, i > 0 && styles.serviceRowGap]}>
+         {cat.items.map((svc, i) => (
+  <View key={svc.key} style={[styles.serviceRow, i > 0 && styles.serviceRowDivider]}>
               {/* Link wraps a Pressable to get router navigation with RN feedback */}
               <Link href={`/(tabs)/services/${svc.key}` as any} asChild>
                 <Pressable style={({ pressed }) => [styles.linkHit, pressed && styles.linkHitPressed]}
@@ -158,29 +158,58 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 16,
-    // subtle shadow (iOS/Android)
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-  },
-  cardGap: { marginTop: 12 },
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 3,
+},
+
+cardGap: { marginTop: 20 },
+
   cardHeaderRow: { flexDirection: 'row', alignItems: 'flex-start' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
   agencyText: { marginTop: 2, color: '#64748b', fontSize: 13 },
   summaryText: { marginTop: 4, color: '#64748b', fontSize: 12 },
   mutedLink: { marginTop: 6, color: '#6b7280', fontSize: 12 },
-  badge: { backgroundColor: '#c57c2222', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  badgeText: { color: '#E67E22', fontSize: 12, fontWeight: '700' },
-  appIconBox: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#c5712222', marginRight: 12, alignItems: 'center', justifyContent: 'center' },
+  badge: { 
+  backgroundColor: '#FFF4E6',
+  paddingHorizontal: 10, 
+  paddingVertical: 3, 
+  borderRadius: 12, 
+  shadowColor: '#E67E22',
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+},
+badgeText: { 
+  color: '#E67E22', 
+  fontSize: 12, 
+  fontWeight: '700',
+},
+  appIconBox: { 
+  width: 44, 
+  height: 44, 
+  borderRadius: 10, 
+  backgroundColor: '#FFF4E6', 
+  marginRight: 12, 
+  alignItems: 'center', 
+  justifyContent: 'center' 
+},
+
   sectionLabel: { marginTop: 14, marginBottom: 8, color: '#111827', fontSize: 13, fontWeight: '700' },
 
   serviceRow: { },
+  serviceRowDivider: {
+  borderTopWidth: 1,
+  borderTopColor: '#f0f0f0',
+  marginTop: 10,
+  paddingTop: 10,
+},
+
   serviceRowGap: { marginTop: 12 },
   linkHit: { paddingVertical: 10, paddingHorizontal: 0 },
   linkHitPressed: { opacity: 0.85 },
@@ -188,7 +217,24 @@ const styles = StyleSheet.create({
   serviceLink: { color: '#1e48a1ff', fontSize: 16, fontWeight: '600' },
   serviceLinkPressed: { textDecorationLine: 'underline' },
   serviceHint: { marginTop: 4, color: '#6b7280', fontSize: 12 },
-  externalBtn: { marginTop: 12, backgroundColor: '#E67E22', borderRadius: 8, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
+ externalBtn: {
+  marginTop: 16,
+  backgroundColor: '#E67E22',
+  borderRadius: 10,
+  paddingVertical: 12,
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'row',
+  gap: 8,
+  shadowColor: '#E67E22',
+  shadowOpacity: 0.3,
+  shadowRadius: 6,
+  elevation: 3,
+},
   externalBtnPressed: { opacity: 0.9 },
-  externalBtnText: { color: '#fff', fontWeight: '700' },
+  externalBtnText: {
+  color: '#fff',
+  fontWeight: '700',
+  fontSize: 15,
+},
 })
