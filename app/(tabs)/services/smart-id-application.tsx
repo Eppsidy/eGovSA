@@ -3,7 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../src/contexts/AuthContext';
-import { createApplication, createAppointment, updateProfile } from '../../../src/lib/api';
+import { addApplicationDocument, createApplication, createAppointment, updateProfile } from '../../../src/lib/api';
 
 export default function SmartIDApplication() {
   const { user } = useAuth();
@@ -105,6 +105,37 @@ export default function SmartIDApplication() {
 
         createdApplicationId = createdApp.id;
         // console.log('Smart ID application created successfully with ID:', createdApplicationId);
+
+        // Upload documents to application_documents table
+        if (birthCertUri) {
+          await addApplicationDocument(createdApplicationId, {
+            applicationId: createdApplicationId,
+            documentType: 'birth_certificate',
+            fileName: 'birth_certificate.jpg',
+            fileUrl: birthCertUri,
+            fileSize: 0, // File size can be calculated if needed
+          });
+        }
+
+        if (parentIdUri) {
+          await addApplicationDocument(createdApplicationId, {
+            applicationId: createdApplicationId,
+            documentType: 'parent_id',
+            fileName: 'parent_id.jpg',
+            fileUrl: parentIdUri,
+            fileSize: 0,
+          });
+        }
+
+        if (photoUri) {
+          await addApplicationDocument(createdApplicationId, {
+            applicationId: createdApplicationId,
+            documentType: 'id_photo',
+            fileName: 'id_photo.jpg',
+            fileUrl: photoUri,
+            fileSize: 0,
+          });
+        }
       }
 
       // Generate and create appointment
