@@ -1,13 +1,14 @@
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080'
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://egovbackend.azurewebsites.net'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 second timeout for Azure deployment
 })
 
 export interface WelcomeUserInfo {
