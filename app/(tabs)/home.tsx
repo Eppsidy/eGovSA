@@ -328,7 +328,7 @@ export default function HomeScreen() {
                 <Text style={styles.notificationTitle}>{n.title}</Text>
               </View>
               <Text style={styles.notificationDesc}>{n.description}</Text>
-              <Text style={styles.notificationTime}>{getTimeAgo(n.createdAt)}</Text>
+              <Text style={styles.notificationTime}>{formatTimestamp(n.createdAt)}</Text>
             </View>
           ))
         )}
