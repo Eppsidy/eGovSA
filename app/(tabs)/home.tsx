@@ -38,7 +38,7 @@ const provincialContacts = {
     ]
   },
   enatis: {
-    name: 'eNatis Support',
+  name: 'eNatis Contact Center',
     provinces: [
       { name: 'Eastern Cape', office: 'Vehicle Registration', phone: '040 609 5111' },
       { name: 'Free State', office: 'Vehicle Registration', phone: '051 407 6911' },
@@ -216,7 +216,6 @@ export default function HomeScreen() {
   {
     key: 'eHomeAffairs',
     title: 'eHomeAffairs',
-    description: 'ID & Passport Services',
     color: '#2F80ED',
     icon: <Ionicons name="document-text-outline" size={22} color="#fff" />,
     onPress: () => router.push('/(tabs)/services' as any),
@@ -224,7 +223,6 @@ export default function HomeScreen() {
   {
     key: 'eNatis',
     title: 'eNatis',
-    description: 'Vehicle Registration',
     color: '#27AE60',
     icon: <Ionicons name="car-outline" size={22} color="#fff" />,
     onPress: () => router.push('/(tabs)/services' as any),
@@ -232,7 +230,6 @@ export default function HomeScreen() {
   {
     key: 'eFiling',
     title: 'eFiling',
-    description: 'Tax Services',
     color: '#e67c35ff',
     icon: <Ionicons name="file-tray-full-outline" size={22} color="#fff" />,
     onPress: () => router.push('/(tabs)/services' as any),
@@ -286,7 +283,6 @@ export default function HomeScreen() {
             <TouchableOpacity key={s.key} style={styles.serviceCard} onPress={s.onPress}>
   <View style={[styles.serviceIcon, { backgroundColor: s.color }]}>{s.icon}</View>
   <Text style={styles.serviceText}>{s.title}</Text>
-  <Text style={styles.serviceDesc}>{s.description}</Text>
 </TouchableOpacity>
           ))}
         </View>
@@ -314,7 +310,6 @@ export default function HomeScreen() {
                 {!n.isRead && <View style={styles.dotActive} />}
                 <Text style={styles.notificationTitle}>{n.title}</Text>
               </View>
-              <Text style={styles.notificationDesc}>{n.description}</Text>
               <Text style={styles.notificationTime}>{getTimeAgo(n.createdAt)}</Text>
             </View>
           ))
@@ -453,9 +448,8 @@ export default function HomeScreen() {
                 <Ionicons name="call-outline" size={18} color="#E67E22" />
               </View>
               <View style={{ flex: 1 }}>
-  <Text style={styles.contactName}>{provincialContacts.homeAffairs.name}</Text>
+  <Text style={styles.contactName}>{provincialContacts.enatis.name}</Text>
   <Text style={styles.contactDept}>Provincial Offices</Text>
-  <Text style={styles.expandHint}>Tap to see all provinces</Text>
               </View>
             </View>
             <Ionicons 
