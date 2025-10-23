@@ -68,7 +68,7 @@ export default function ApplicationsScreen() {
       <View style={styles.page}>
         <Header />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#27AE60" />
+          <ActivityIndicator size="large" color="#E67E22" />
           <Text style={styles.loadingText}>Loading applications...</Text>
         </View>
       </View>
@@ -93,7 +93,7 @@ export default function ApplicationsScreen() {
         style={styles.content}
         contentContainerStyle={styles.contentInner}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#27AE60']} tintColor="#27AE60" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#E67E22']} tintColor="#E67E22" />
         }
       >
         {list.length === 0 ? (
@@ -149,9 +149,9 @@ const styles = StyleSheet.create({
   emptyText: { marginTop: 16, fontSize: 16, color: '#999' },
   tabsWrap: { flexDirection: 'row', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e0e0e0' },
   tab: { flex: 1, paddingVertical: 14, alignItems: 'center', borderBottomWidth: 3, borderBottomColor: 'transparent' },
-  tabActive: { borderBottomColor: '#27AE60' },
+  tabActive: { borderBottomColor: '#E67E22' },
   tabText: { fontSize: 15, fontWeight: '500', color: '#666' },
-  tabTextActive: { color: '#27AE60', fontWeight: '600' },
+  tabTextActive: { color: '#E67E22', fontWeight: '600' },
   content: { flex: 1 },
   contentInner: { padding: 16, paddingBottom: 80 },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
@@ -162,5 +162,5 @@ const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', marginBottom: 8 },
   label: { fontSize: 14, color: '#666', width: 140 },
   value: { fontSize: 14, color: '#222', fontWeight: '500', flex: 1 },
-  fab: { position: 'absolute', bottom: 20, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#27AE60', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 8 },
+  fab: { position: 'absolute', bottom: 20, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#E67E22', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 8 },
 })

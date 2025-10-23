@@ -77,8 +77,8 @@ export default function AppointmentsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={['#27AE60']}
-            tintColor="#27AE60"
+            colors={['#E67E22']}
+            tintColor="#E67E22"
           />
         }
       >
@@ -96,7 +96,7 @@ export default function AppointmentsScreen() {
             <View key={appointment.id} style={styles.appointmentCard}>
               <View style={styles.appointmentHeader}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="calendar" size={24} color="#27AE60" />
+                  <Ionicons name="calendar" size={24} color="#E67E22" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.serviceType}>{appointment.serviceType}</Text>
