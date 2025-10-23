@@ -50,7 +50,7 @@ public class ApplicationService {
     public List<ApplicationDto> getUserApplications(UUID userId) {
         List<Application> applications = applicationRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return applications.stream()
-                .map(this::convertToDto)
+                .map(this::convertToDtoWithoutDocuments)
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +59,7 @@ public class ApplicationService {
     public List<ApplicationDto> getUserApplicationsByStatus(UUID userId, String status) {
         List<Application> applications = applicationRepository.findByUserIdAndStatus(userId, status);
         return applications.stream()
-                .map(this::convertToDto)
+                .map(this::convertToDtoWithoutDocuments)
                 .collect(Collectors.toList());
     }
     
@@ -68,7 +68,7 @@ public class ApplicationService {
     public List<ApplicationDto> getUserApplicationsByStatuses(UUID userId, List<String> statuses) {
         List<Application> applications = applicationRepository.findByUserIdAndStatusIn(userId, statuses);
         return applications.stream()
-                .map(this::convertToDto)
+                .map(this::convertToDtoWithoutDocuments)
                 .collect(Collectors.toList());
     }
 
@@ -208,6 +208,25 @@ public class ApplicationService {
         dto.setCreatedAt(application.getCreatedAt());
         dto.setUpdatedAt(application.getUpdatedAt());
         dto.setDocuments(documents);
+        
+        return dto;
+    }
+    
+    private ApplicationDto convertToDtoWithoutDocuments(Application application) {
+        ApplicationDto dto = new ApplicationDto();
+        dto.setId(application.getId());
+        dto.setUserId(application.getUserId());
+        dto.setServiceType(application.getServiceType());
+        dto.setReferenceNumber(application.getReferenceNumber());
+        dto.setStatus(application.getStatus());
+        dto.setCurrentStep(application.getCurrentStep());
+        dto.setApplicationData(application.getApplicationData());
+        dto.setSubmittedAt(application.getSubmittedAt());
+        dto.setExpectedCompletionDate(application.getExpectedCompletionDate());
+        dto.setCompletedAt(application.getCompletedAt());
+        dto.setCreatedAt(application.getCreatedAt());
+        dto.setUpdatedAt(application.getUpdatedAt());
+        dto.setDocuments(List.of()); // Empty list for list views
         
         return dto;
     }

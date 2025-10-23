@@ -203,6 +203,10 @@ export const createApplication = async (userId: string, request: CreateApplicati
   try {
     const response = await api.post<Application>(`/api/applications?userId=${userId}`, request)
     // console.log('Create Application Response:', response.data)
+    
+    // Clear cached applications when a new one is created
+    await SecureStore.deleteItemAsync(`userApplications_${userId}`)
+    
     return response.data
   } catch (error: any) {
     console.error('Error creating application:', error)
@@ -215,8 +219,29 @@ export const createApplication = async (userId: string, request: CreateApplicati
  */
 export const getUserApplications = async (userId: string): Promise<Application[]> => {
   try {
+    // Try to get cached applications first
+    const cachedApplications = await SecureStore.getItemAsync(`userApplications_${userId}`)
+    if (cachedApplications) {
+      // console.log('Applications fetched from SecureStore cache')
+      const parsed = JSON.parse(cachedApplications)
+      // Return cached data but fetch fresh data in background
+      setTimeout(() => {
+        api.get<Application[]>(`/api/applications/user/${userId}`)
+          .then(response => {
+            SecureStore.setItemAsync(`userApplications_${userId}`, JSON.stringify(response.data))
+          })
+          .catch(() => {})
+      }, 0)
+      return parsed
+    }
+
+    // If not in cache, fetch from API
     const response = await api.get<Application[]>(`/api/applications/user/${userId}`)
     // console.log('User Applications Response:', response.data)
+    
+    // Cache the response
+    await SecureStore.setItemAsync(`userApplications_${userId}`, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error fetching applications:', error)
@@ -229,7 +254,29 @@ export const getUserApplications = async (userId: string): Promise<Application[]
  */
 export const getUserApplicationsByStatus = async (userId: string, status: string): Promise<Application[]> => {
   try {
+    // Try to get cached applications first
+    const cacheKey = `userApplications_${userId}_status_${status}`
+    const cachedApplications = await SecureStore.getItemAsync(cacheKey)
+    if (cachedApplications) {
+      // console.log('Applications by status fetched from SecureStore cache')
+      const parsed = JSON.parse(cachedApplications)
+      // Return cached data but fetch fresh data in background
+      setTimeout(() => {
+        api.get<Application[]>(`/api/applications/user/${userId}/status/${status}`)
+          .then(response => {
+            SecureStore.setItemAsync(cacheKey, JSON.stringify(response.data))
+          })
+          .catch(() => {})
+      }, 0)
+      return parsed
+    }
+
+    // If not in cache, fetch from API
     const response = await api.get<Application[]>(`/api/applications/user/${userId}/status/${status}`)
+    
+    // Cache the response
+    await SecureStore.setItemAsync(cacheKey, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error fetching applications by status:', error)
@@ -242,7 +289,29 @@ export const getUserApplicationsByStatus = async (userId: string, status: string
  */
 export const getUserApplicationsByStatuses = async (userId: string, statuses: string[]): Promise<Application[]> => {
   try {
+    // Try to get cached applications first
+    const cacheKey = `userApplications_${userId}_statuses_${statuses.sort().join('_')}`
+    const cachedApplications = await SecureStore.getItemAsync(cacheKey)
+    if (cachedApplications) {
+      // console.log('Applications by statuses fetched from SecureStore cache')
+      const parsed = JSON.parse(cachedApplications)
+      // Return cached data but fetch fresh data in background
+      setTimeout(() => {
+        api.post<Application[]>(`/api/applications/user/${userId}/statuses`, statuses)
+          .then(response => {
+            SecureStore.setItemAsync(cacheKey, JSON.stringify(response.data))
+          })
+          .catch(() => {})
+      }, 0)
+      return parsed
+    }
+
+    // If not in cache, fetch from API
     const response = await api.post<Application[]>(`/api/applications/user/${userId}/statuses`, statuses)
+    
+    // Cache the response
+    await SecureStore.setItemAsync(cacheKey, JSON.stringify(response.data))
+    
     return response.data
   } catch (error: any) {
     console.error('Error fetching applications by statuses:', error)
@@ -276,6 +345,13 @@ export const updateApplicationStatus = async (
       status,
       currentStep,
     })
+    
+    // Get the application to find userId and clear cache
+    const application = response.data
+    if (application.userId) {
+      await SecureStore.deleteItemAsync(`userApplications_${application.userId}`)
+    }
+    
     return response.data
   } catch (error: any) {
     console.error('Error updating application status:', error)
@@ -562,6 +638,7 @@ export const clearUserCache = async (userId: string): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(`userProfile_${userId}`)
     await SecureStore.deleteItemAsync(`welcome_${userId}`)
+    await SecureStore.deleteItemAsync(`userApplications_${userId}`)
     // console.log('User cache cleared successfully')
   } catch (error: any) {
     console.error('Error clearing user cache:', error)

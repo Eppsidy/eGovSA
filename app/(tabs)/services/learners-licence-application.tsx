@@ -123,9 +123,9 @@ export default function LearnersLicenceApplication() {
       // Create appointment in backend
       if (user?.id && createdApplicationId && selectedDate) {
         const testingCenters = [
-          { name: 'Centurion Testing Centre', address: '1234 Heuwel Ave, Centurion, 0157' },
-          { name: 'Johannesburg Testing Centre', address: '789 Commissioner St, Johannesburg, 2001' },
-          { name: 'Cape Town Testing Centre', address: '456 Voortrekker Rd, Bellville, Cape Town, 7530' },
+          { name: 'your nearest testing centre', address: '1234 Heuwel Ave, Centurion, 0157' },
+          { name: 'your nearest testing centre', address: '789 Commissioner St, Johannesburg, 2001' },
+          { name: 'your nearest testing centre', address: '456 Voortrekker Rd, Bellville, Cape Town, 7530' },
         ];
         
         const randomCenter = testingCenters[Math.floor(Math.random() * testingCenters.length)];

@@ -47,20 +47,37 @@ export default function NotificationsScreen() {
     }
   }
 
-  const getTimeAgo = (dateString: string): string => {
+  const formatTimestamp = (dateString: string): string => {
     const date = new Date(dateString)
     const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMins / 60)
-    const diffDays = Math.floor(diffHours / 24)
-
-    if (diffMins < 60) {
-      return diffMins <= 1 ? '1 minute ago' : `${diffMins} minutes ago`
-    } else if (diffHours < 24) {
-      return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`
+    
+    // Check if it's today
+    const isToday = date.toDateString() === now.toDateString()
+    
+    // Check if it's yesterday
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const isYesterday = date.toDateString() === yesterday.toDateString()
+    
+    // Format time as HH:MM AM/PM
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    const displayHours = hours % 12 || 12
+    const displayMinutes = minutes.toString().padStart(2, '0')
+    const timeString = `${displayHours}:${displayMinutes} ${ampm}`
+    
+    if (isToday) {
+      return `Today at ${timeString}`
+    } else if (isYesterday) {
+      return `Yesterday at ${timeString}`
     } else {
-      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`
+      // Format as "Oct 21, 2025 at 2:30 PM"
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      const month = monthNames[date.getMonth()]
+      const day = date.getDate()
+      const year = date.getFullYear()
+      return `${month} ${day}, ${year} at ${timeString}`
     }
   }
 
@@ -149,7 +166,7 @@ export default function NotificationsScreen() {
                     )}
                   </View>
                   <Text style={styles.desc}>{n.description}</Text>
-                  <Text style={styles.time}>{getTimeAgo(n.createdAt)}</Text>
+                  <Text style={styles.time}>{formatTimestamp(n.createdAt)}</Text>
                 </View>
               </View>
             </TouchableOpacity>

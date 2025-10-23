@@ -72,9 +72,9 @@ export default function PassportApplication() {
       // Create appointment in backend
       if (user?.id && createdApplicationId) {
         const locations = [
-          { name: 'Home Affairs - Johannesburg', address: '123 Main St, Johannesburg, 2000' },
-          { name: 'Home Affairs - Pretoria', address: '456 Church St, Pretoria, 0001' },
-          { name: 'Home Affairs - Cape Town', address: '789 Adderley St, Cape Town, 8001' },
+          { name: 'your nearest Home Affairs', address: '123 Main St, Johannesburg, 2000' },
+          { name: 'your nearest Home Affairs', address: '456 Church St, Pretoria, 0001' },
+          { name: 'your nearest Home Affairs', address: '789 Adderley St, Cape Town, 8001' },
         ]
         const randomLocation = locations[Math.floor(Math.random() * locations.length)]
 

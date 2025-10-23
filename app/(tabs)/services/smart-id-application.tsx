@@ -145,9 +145,9 @@ export default function SmartIDApplication() {
       // Create appointment in backend with location information
       if (user?.id && createdApplicationId) {
         const locations = [
-          { name: 'Pretoria Home Affairs Office', address: '230 Pretorius St, Pretoria Central, Pretoria, 0002' },
-          { name: 'Johannesburg Home Affairs Office', address: '44 Harrison St, Johannesburg, 2001' },
-          { name: 'Cape Town Home Affairs Office', address: '56 Barrack St, Cape Town City Centre, Cape Town, 8001' },
+          { name: 'your nearest Home Affairs', address: '230 Pretorius St, Pretoria Central, Pretoria, 0002' },
+          { name: 'your nearest Home Affairs', address: '44 Harrison St, Johannesburg, 2001' },
+          { name: 'your nearest Home Affairs', address: '56 Barrack St, Cape Town City Centre, Cape Town, 8001' },
         ];
         
         const randomLocation = locations[Math.floor(Math.random() * locations.length)];
