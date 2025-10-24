@@ -4,22 +4,27 @@
     "slug": "eGovSA",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/j-G6PUes.jpg",
     "scheme": "egovsa",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.itmda.eGovSA",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "icon": "./assets/images/j-G6PUes.jpg",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#de6c0fff",
+        "foregroundImage": "./assets/images/j-G6PUes.jpg",
+        "monochromeImage": "./assets/images/j-G6PUes.jpg"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.itmda.eGovSA"
     },
     "web": {
       "output": "static",
@@ -30,7 +35,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/j-G6PUes.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -44,13 +49,21 @@
       [
         "expo-notifications",
         {
-          "color": "#E67E22"
+          "color": "#E67E22",
+          "mode": "production"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4afc4c09-33f6-48d6-b57a-58b2edfb18bb"
+      }
+    },
+    "owner": "itmda"
   }
 }

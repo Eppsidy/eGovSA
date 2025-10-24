@@ -63,12 +63,20 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
     }
     
     try {
+      // Use projectId from environment or app.json extra.eas.projectId
+      const projectId = process.env.EXPO_PUBLIC_PROJECT_ID || Constants.expoConfig?.extra?.eas?.projectId
+      
+      if (!projectId) {
+        console.warn('No project ID found. Push notifications may not work properly.')
+      }
+      
       token = (await Notifications.getExpoPushTokenAsync({
-        projectId: process.env.EXPO_PUBLIC_PROJECT_ID || 'your-project-id',
+        projectId: projectId || '4afc4c09-33f6-48d6-b57a-58b2edfb18bb',
       })).data
       console.log('Push token:', token)
     } catch (error) {
       console.error('Error getting push token:', error)
+      // Don't throw, just return null to allow app to continue
       return null
     }
   } else {
