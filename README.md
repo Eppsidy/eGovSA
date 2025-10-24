@@ -227,7 +227,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👥 Authors & Contributors
 
 - **Tlhonolofatso Ramokhoase** - *Developer* - [Eppsidy](https://github.com/Eppsidy)
-- **Nyuleka Mashicolo** - *Developer* - [GitHub](https://github.com/nyulekakhethiwe)
+- **Nyuleka Mashicolo** - *Developer* - [GitHub](https://github.com/Daisy543)
 - **Rearabile Charity** - *Developer* - [RCharity](https://github.com/RCharity)
 - **Tshegofatso Ramokopu** - *Developer* - [Tshego-eng](https://github.com/Tshego-eng)
 
