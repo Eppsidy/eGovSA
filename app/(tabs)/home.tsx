@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useState } from 'react'
-import { ActivityIndicator, Alert, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, ImageBackground, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { fetchProfile, fetchWelcomeData, getActiveUserNotifications, Notification, WelcomeResponse, WelcomeUserInfo } from '../../src/lib/api'
 
 // Provincial contact data structure
@@ -56,6 +57,7 @@ const provincialContacts = {
 export default function HomeScreen() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const colors = useThemeColor()
   const [welcomeData, setWelcomeData] = useState<WelcomeResponse | null>(null)
   const [profileData, setProfileData] = useState<WelcomeUserInfo | null>(null)
   const [loadingWelcome, setLoadingWelcome] = useState(true)
@@ -231,30 +233,36 @@ export default function HomeScreen() {
 
   const services = [
   {
-    key: 'eHomeAffairs',
-    title: 'eHomeAffairs',
-    color: '#2F80ED',
-    icon: <Ionicons name="document-text-outline" size={22} color="#fff" />,
-    onPress: () => router.push('/(tabs)/services' as any),
+    key: 'appointments',
+    title: 'My Appointments',
+    subtitle: 'View and manage your scheduled visits',
+    image: { uri: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=2068&auto=format&fit=crop' },
+    color: '#8B5CF6',
+    icon: 'calendar',
+    onPress: () => router.push('/profile/appointments' as any),
   },
   {
-    key: 'eNatis',
-    title: 'eNatis',
-    color: '#27AE60',
-    icon: <Ionicons name="car-outline" size={22} color="#fff" />,
-    onPress: () => router.push('/(tabs)/services' as any),
+    key: 'applications',
+    title: 'My Applications',
+    subtitle: 'Track your submitted applications',
+    image: { uri: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop' },
+    color: '#3B82F6',
+    icon: 'document-text',
+    onPress: () => router.push('/(tabs)/applications' as any),
   },
   {
-    key: 'eFiling',
-    title: 'eFiling',
-    color: '#e67c35ff',
-    icon: <Ionicons name="file-tray-full-outline" size={22} color="#fff" />,
+    key: 'services',
+    title: 'All Services',
+    subtitle: 'Browse government services',
+    image: { uri: 'https://images.unsplash.com/photo-1523292562811-8fa7962a78c8?q=80&w=2070&auto=format&fit=crop' },
+    color: '#10B981',
+    icon: 'grid',
     onPress: () => router.push('/(tabs)/services' as any),
   },
 ] as const
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header/>
 
       <ScrollView 
@@ -270,7 +278,7 @@ export default function HomeScreen() {
         }
       >
         {/* Welcome banner */}
-        <View style={styles.welcomeCard}>
+        <View style={[styles.welcomeCard, { backgroundColor: colors.card }]}>
           <View style={styles.avatar}>
             {welcomeData?.user?.avatarUrl ? (
               <Ionicons name="person" color="#fff" size={22} />
@@ -283,72 +291,98 @@ export default function HomeScreen() {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <>
-                <Text style={styles.welcomeHi}>
+                <Text style={[styles.welcomeHi, { color: colors.text }]}>
                   {welcomeData?.message || `Hi ${user?.first_name ? `, ${user.first_name}` : ', User'}`}
                 </Text>
-                <Text style={styles.welcomeSub}>Welcome back to eGov SA</Text>
+                <Text style={[styles.welcomeSub, { color: colors.textSecondary }]}>Welcome back to eGov SA</Text>
               </>
             )}
           </View>
           <Ionicons name="shield-checkmark-outline" size={22} color="#fff" />
         </View>
 
-        {/* Government Services */}
-        <Text style={styles.sectionTitle}>Government Services</Text>
-        <View style={styles.servicesGrid}>
-          {services.map((s) => (
-            <TouchableOpacity key={s.key} style={styles.serviceCard} onPress={s.onPress}>
-  <View style={[styles.serviceIcon, { backgroundColor: s.color }]}>{s.icon}</View>
-  <Text style={styles.serviceText}>{s.title}</Text>
-</TouchableOpacity>
+        {/* Quick Access - Appointments */}
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Access</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalScroll}
+        >
+          {services.map((service) => (
+            <TouchableOpacity 
+              key={service.key}
+              style={styles.appointmentFeatureCard}
+              onPress={service.onPress}
+              activeOpacity={0.9}
+            >
+              <ImageBackground
+                source={service.image}
+                style={styles.cardImageBackground}
+                imageStyle={{ borderRadius: 16 }}
+              >
+                <View style={styles.cardOverlay}>
+                  <View style={[styles.appointmentIconCircle, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <Ionicons name={service.icon as any} size={32} color="#fff" />
+                  </View>
+                  <View style={styles.appointmentContent}>
+                    <Text style={styles.appointmentTitle}>{service.title}</Text>
+                    <Text style={styles.appointmentSubtitle}>{service.subtitle}</Text>
+                    <View style={styles.appointmentButton}>
+                      <Text style={[styles.appointmentButtonText, { color: service.color }]}>View</Text>
+                      <Ionicons name="arrow-forward" size={16} color={service.color} />
+                    </View>
+                  </View>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
 
         {/* Notifications */}
         <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          <Link href={'/notifications' as any} style={styles.viewAll}>View All ▸</Link>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Notifications</Text>
+          <Link href={'/notifications' as any} style={[styles.viewAll, { color: colors.accentHover }]}>View All ▸</Link>
         </View>
 
         {loadingNotifications ? (
-          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
-            <ActivityIndicator size="small" color="#27AE60" />
-            <Text style={{ marginTop: 8, fontSize: 12, color: '#6B7280' }}>Loading notifications...</Text>
+          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: colors.card, borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
+            <ActivityIndicator size="small" color={colors.success} />
+            <Text style={{ marginTop: 8, fontSize: 12, color: colors.textTertiary }}>Loading notifications...</Text>
           </View>
         ) : notifications.length === 0 ? (
-          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
-            <Ionicons name="notifications-off-outline" size={32} color="#ccc" />
-            <Text style={{ marginTop: 8, fontSize: 13, color: '#6B7280' }}>No notifications yet</Text>
+          <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: colors.card, borderRadius: 12, padding: 20, alignItems: 'center', ...cardShadow }}>
+            <Ionicons name="notifications-off-outline" size={32} color={colors.textMuted} />
+            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textTertiary }}>No notifications yet</Text>
           </View>
         ) : (
           notifications.map((n) => (
-            <View key={n.id} style={styles.notificationCard}>
+            <View key={n.id} style={[styles.notificationCard, { backgroundColor: colors.card }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 {!n.isRead && <View style={styles.dotActive} />}
-                <Text style={styles.notificationTitle}>{n.title}</Text>
+                <Text style={[styles.notificationTitle, { color: colors.text }]}>{n.title}</Text>
               </View>
-              <Text style={styles.notificationDesc}>{n.description}</Text>
-              <Text style={styles.notificationTime}>{formatTimestamp(n.createdAt)}</Text>
+              <Text style={[styles.notificationDesc, { color: colors.textSecondary }]}>{n.description}</Text>
+              <Text style={[styles.notificationTime, { color: colors.textTertiary }]}>{formatTimestamp(n.createdAt)}</Text>
             </View>
           ))
         )}
 
         {/* Contacts - Expandable */}
-        <Text style={styles.sectionTitle}>Contacts</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Contacts</Text>
         
         {/* Home Affairs Contact */}
         <View style={styles.contactContainer}>
           <Pressable
-            style={styles.contactCard}
+            style={[styles.contactCard, { backgroundColor: colors.card }]}
             onPress={() => toggleContact('homeAffairs')}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-              <View style={styles.contactIcon}>
-                <Ionicons name="call-outline" size={18} color="#E67E22" />
+              <View style={[styles.contactIcon, { backgroundColor: colors.contactIconBg }]}>
+                <Ionicons name="call-outline" size={18} color={colors.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.contactName}>{provincialContacts.homeAffairs.name}</Text>
-                <Text style={styles.contactDept}>Provincial Offices</Text>
+                <Text style={[styles.contactName, { color: colors.text }]}>{provincialContacts.homeAffairs.name}</Text>
+                <Text style={[styles.contactDept, { color: colors.textSecondary }]}>Provincial Offices</Text>
               </View>
             </View>
             <Ionicons 
@@ -359,14 +393,14 @@ export default function HomeScreen() {
           </Pressable>
           
           {expandedContact === 'homeAffairs' && (
-            <View style={styles.provinceList}>
+            <View style={[styles.provinceList, { backgroundColor: colors.cardHover }]}>
               {provincialContacts.homeAffairs.provinces.map((province, index) => (
                 <View key={index}>
                   <Pressable
-                    style={styles.provinceCard}
+                    style={[styles.provinceCard, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={() => toggleProvince(`homeAffairs-${index}`)}
                   >
-                    <Text style={styles.provinceName}>{province.name}</Text>
+                    <Text style={[styles.provinceName, { color: colors.text }]}>{province.name}</Text>
                     <Ionicons 
                       name={expandedProvince === `homeAffairs-${index}` ? "chevron-up" : "chevron-down"} 
                       size={18} 
@@ -375,17 +409,17 @@ export default function HomeScreen() {
                   </Pressable>
                   
                   {expandedProvince === `homeAffairs-${index}` && (
-                    <View style={styles.provinceDetails}>
-                      <Text style={styles.provinceOffice}>{province.office}</Text>
-                      <Text style={styles.provincePhone}>{province.phone}</Text>
+                    <View style={[styles.provinceDetails, { backgroundColor: colors.cardHover, borderLeftColor: colors.primary }]}>
+                      <Text style={[styles.provinceOffice, { color: colors.textTertiary }]}>{province.office}</Text>
+                      <Text style={[styles.provincePhone, { color: colors.primary }]}>{province.phone}</Text>
                       <Pressable
-                        style={styles.callBtn}
+                        style={[styles.callBtn, { backgroundColor: colors.primaryLight }]}
                         onPress={() => {
                           const tel = `tel:${province.phone.replace(/\s+/g, '')}`
                           Linking.openURL(tel)
                         }}
                       >
-                        <Text style={styles.callBtnText}>Call</Text>
+                        <Text style={[styles.callBtnText, { color: colors.primary }]}>Call</Text>
                       </Pressable>
                     </View>
                   )}
@@ -398,16 +432,16 @@ export default function HomeScreen() {
         {/* SARS Contact */}
         <View style={styles.contactContainer}>
           <Pressable
-            style={styles.contactCard}
+            style={[styles.contactCard, { backgroundColor: colors.card }]}
             onPress={() => toggleContact('sars')}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-              <View style={[styles.contactIcon, { backgroundColor: contactColors.homeAffairs + '22' }]}>
-  <Ionicons name="call-outline" size={18} color={contactColors.homeAffairs} />
+              <View style={[styles.contactIcon, { backgroundColor: colors.contactIconBg }]}>
+  <Ionicons name="call-outline" size={18} color={colors.primary} />
 </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.contactName}>{provincialContacts.sars.name}</Text>
-                <Text style={styles.contactDept}>Tax Services</Text>
+                <Text style={[styles.contactName, { color: colors.text }]}>{provincialContacts.sars.name}</Text>
+                <Text style={[styles.contactDept, { color: colors.textSecondary }]}>Tax Services</Text>
               </View>
             </View>
             <Ionicons 
@@ -457,17 +491,17 @@ export default function HomeScreen() {
         {/* eNatis Contact */}
         <View style={styles.contactContainer}>
           <Pressable
-            style={styles.contactCard}
+            style={[styles.contactCard, { backgroundColor: colors.card }]}
             onPress={() => toggleContact('enatis')}
           >
             
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-              <View style={styles.contactIcon}>
-                <Ionicons name="call-outline" size={18} color="#E67E22" />
+              <View style={[styles.contactIcon, { backgroundColor: colors.contactIconBg }]}>
+                <Ionicons name="call-outline" size={18} color={colors.primary} />
               </View>
               <View style={{ flex: 1 }}>
-  <Text style={styles.contactName}>{provincialContacts.enatis.name}</Text>
-  <Text style={styles.contactDept}>Provincial Offices</Text>
+  <Text style={[styles.contactName, { color: colors.text }]}>{provincialContacts.enatis.name}</Text>
+  <Text style={[styles.contactDept, { color: colors.textSecondary }]}>Provincial Offices</Text>
               </View>
             </View>
             <Ionicons 
@@ -527,33 +561,103 @@ const cardShadow = {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F5F6F8' },
+  page: { flex: 1 },
 
-  welcomeCard: { margin: 16, padding: 30, backgroundColor: '#fff', borderRadius: 14, flexDirection: 'row', alignItems: 'center', gap: 12, ...cardShadow },
+  welcomeCard: { margin: 16, padding: 30, borderRadius: 14, flexDirection: 'row', alignItems: 'center', gap: 12, ...cardShadow },
   avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#1A2B4A', alignItems: 'center', justifyContent: 'center' },
-  welcomeHi: { fontSize: 20, color: '#1A2B4A', fontWeight: '700' },
-  welcomeSub: { fontSize: 16, color: '#5A6C7D' },
+  welcomeHi: { fontSize: 20, fontWeight: '700' },
+  welcomeSub: { fontSize: 16 },
 
-  sectionTitle: { marginTop: 24, marginHorizontal: 16, marginBottom: 12, fontSize: 16, fontWeight: '700', color: '#222', letterSpacing: 0.3 },
+  sectionTitle: { marginTop: 24, marginHorizontal: 16, marginBottom: 12, fontSize: 16, fontWeight: '700', letterSpacing: 0.3 },
   rowBetween: { marginHorizontal: 16, marginTop: 10, marginBottom: 6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  viewAll: { color: '#de6c0fff', fontWeight: '600' },
+  viewAll: { fontWeight: '600' },
 
-  servicesGrid: { flexDirection: 'row', gap: 12, paddingHorizontal: 16 },
-  serviceCard: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center', ...cardShadow },
+  servicesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 16 },
+  serviceCard: { width: '47%', borderRadius: 12, padding: 12, alignItems: 'center', ...cardShadow },
   serviceIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  serviceText: { fontSize: 14, color: '#222', fontWeight: '600' },
-  serviceDesc: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  serviceText: { fontSize: 14, fontWeight: '600' },
+  serviceDesc: { fontSize: 11, marginTop: 2 },
 
-  notificationCard: { marginHorizontal: 16, marginBottom: 10, backgroundColor: '#fff', borderRadius: 12, padding: 12, ...cardShadow },
+  horizontalScroll: {
+    paddingHorizontal: 16,
+    gap: 16,
+  },
+  appointmentFeatureCard: {
+    width: 320,
+    height: 180,
+    borderRadius: 16,
+    ...cardShadow,
+    overflow: 'hidden',
+  },
+  cardImageBackground: {
+    width: '100%',
+    height: '100%',
+  },
+  cardOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  appointmentIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  appointmentContent: {
+    flex: 1,
+    minWidth: 0,
+  },
+  appointmentTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 4,
+    flexWrap: 'wrap',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
+  },
+  appointmentSubtitle: {
+    fontSize: 13,
+    color: '#E9D5FF',
+    marginBottom: 12,
+    flexWrap: 'wrap',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
+  },
+  appointmentButton: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+  },
+  appointmentButtonText: {
+    fontWeight: '700',
+    fontSize: 13,
+  },
+
+  notificationCard: { marginHorizontal: 16, marginBottom: 10, borderRadius: 12, padding: 12, ...cardShadow },
   dotActive: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#de6c0fff', marginRight: 6 },
-  notificationTitle: { fontSize: 14, fontWeight: '700', color: '#1A2B4A' },
-  notificationDesc: { fontSize: 13, color: '#334155', marginBottom: 6 },
-  notificationTime: { fontSize: 12, color: '#5A6C7D' },
-  expandHint: { fontSize: 11, color: '#9CA3AF', marginTop: 2, fontStyle: 'italic' },
+  notificationTitle: { fontSize: 14, fontWeight: '700' },
+  notificationDesc: { fontSize: 13, marginBottom: 6 },
+  notificationTime: { fontSize: 12 },
+  expandHint: { fontSize: 11, marginTop: 2, fontStyle: 'italic' },
 
   contactContainer: { marginHorizontal: 16, marginBottom: 12 },
   contactCard: { 
-    backgroundColor: '#fff', 
     borderRadius: 12, 
     padding: 12, 
     flexDirection: 'row', 
@@ -561,44 +665,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     ...cardShadow 
   },
-  contactIcon: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#ed7e2f22', alignItems: 'center', justifyContent: 'center' },
-  contactName: { fontSize: 14, fontWeight: '700', color: '#37291fff' },
-  contactDept: { fontSize: 12, color: '#80756bff' },
+  contactIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  contactName: { fontSize: 14, fontWeight: '700' },
+  contactDept: { fontSize: 12 },
   
   provinceList: { 
-    backgroundColor: '#F9FAFB', 
     borderBottomLeftRadius: 12, 
     borderBottomRightRadius: 12, 
     overflow: 'hidden',
     marginTop: 2
   },
   provinceCard: { 
-    backgroundColor: '#fff', 
     padding: 14, 
     borderBottomWidth: 1, 
-    borderBottomColor: '#E5E7EB',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  provinceName: { fontSize: 13, fontWeight: '600', color: '#374151' },
+  provinceName: { fontSize: 13, fontWeight: '600' },
   
   provinceDetails: { 
-    backgroundColor: '#F9FAFB', 
     padding: 14,
     paddingLeft: 28,
     borderLeftWidth: 3,
-    borderLeftColor: '#E67E22'
   },
-  provinceOffice: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
-  provincePhone: { fontSize: 13, color: '#E67E22', marginBottom: 10, fontWeight: '600' },
+  provinceOffice: { fontSize: 12, marginBottom: 4 },
+  provincePhone: { fontSize: 13, marginBottom: 10, fontWeight: '600' },
   
   callBtn: { 
-    backgroundColor: '#f8ebe6ff', 
     paddingHorizontal: 14, 
     paddingVertical: 8, 
     borderRadius: 10,
     alignSelf: 'flex-start'
   },
-  callBtnText: { color: '#E67E22', fontWeight: '700', fontSize: 13 },
+  callBtnText: { fontWeight: '700', fontSize: 13 },
 })

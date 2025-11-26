@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 
 export default function PinResetScreen() {
   const router = useRouter()
+  const colors = useThemeColor()
   const [pin, setPin] = useState<string[]>(['', '', '', ''])
   const inputs = useRef<(TextInput | null)[]>([])
   
@@ -30,7 +32,7 @@ export default function PinResetScreen() {
           <TextInput
             key={i}
             ref={el => { inputs.current[i] = el }}
-            style={styles.pinInput}
+            style={[styles.pinInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
             keyboardType='number-pad'
             secureTextEntry
             maxLength={1}
@@ -43,9 +45,9 @@ export default function PinResetScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Reset PIN</Text>
-      <Text style={styles.subtitle}>Create a new 4-digit PIN</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Reset PIN</Text>
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Create a new 4-digit PIN</Text>
       {renderInputs()}
       <TouchableOpacity style={[styles.button, (toString(pin).length !== 4) && styles.buttonDisabled]} disabled={toString(pin).length !== 4} onPress={goToConfirm}>
         <Text style={styles.buttonText}>Continue</Text>
@@ -55,11 +57,11 @@ export default function PinResetScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 80, backgroundColor: '#FFF' },
-  title: { fontSize: 28, fontWeight: '700', marginBottom: 8, color: '#222' },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 16 },
+  container: { flex: 1, paddingHorizontal: 24, paddingTop: 80 },
+  title: { fontSize: 28, fontWeight: '700', marginBottom: 8 },
+  subtitle: { fontSize: 16, marginBottom: 16 },
   pinRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-  pinInput: { width: 60, height: 70, borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 14, textAlign: 'center', fontSize: 30, backgroundColor: '#FAFAFA' },
+  pinInput: { width: 60, height: 70, borderWidth: 1, borderRadius: 14, textAlign: 'center', fontSize: 30 },
   button: { backgroundColor: '#de6c0fff', paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#de6c0fff', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
   buttonDisabled: { backgroundColor: '#fba158ff' },
   buttonText: { color: '#FFF', fontSize: 18, fontWeight: '600' },

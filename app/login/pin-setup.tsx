@@ -4,10 +4,12 @@ import * as SecureStore from 'expo-secure-store'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { supabase } from '../../src/lib/supabase'
 
 export default function PinSetupScreen() {
   const router = useRouter()
+  const colors = useThemeColor()
   const { email, firstName, lastName } = useLocalSearchParams<{ email:string; firstName:string; lastName:string }>()
   const [pin, setPin] = useState(['', '', '', ''])
   const [confirmPin, setConfirmPin] = useState(['', '', '', ''])
@@ -84,23 +86,23 @@ export default function PinSetupScreen() {
       setSaving(false) 
     } 
   }
-  const renderPinInputs = (confirm=false) => { const arr = confirm? confirmPin : pin; return (<View style={styles.pinRow}>{arr.map((d,i)=>(<TextInput key={i} ref={el=>{ if(confirm){ confirmInputs.current[i]=el } else { inputs.current[i]=el } }} style={styles.pinInput} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i,confirm)} />))}</View>) }
+  const renderPinInputs = (confirm=false) => { const arr = confirm? confirmPin : pin; return (<View style={styles.pinRow}>{arr.map((d,i)=>(<TextInput key={i} ref={el=>{ if(confirm){ confirmInputs.current[i]=el } else { inputs.current[i]=el } }} style={[styles.pinInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i,confirm)} />))}</View>) }
   return (
-    <View style={styles.container}>
-  {step===1 && (<><Text style={styles.title}>Create App PIN</Text><Text style={styles.subtitle}>Set a 4-digit PIN to secure quick access</Text>{renderPinInputs(false)}<TouchableOpacity style={[styles.button, pinsToString(pin).length!==4 && styles.buttonDisabled]} disabled={pinsToString(pin).length!==4} onPress={handleNext}><Text style={styles.buttonText}>Continue</Text></TouchableOpacity><Text style={styles.progressText}>Step 3 of 4</Text></>) }
-  {step===2 && (<><Text style={styles.title}>Confirm PIN</Text><Text style={styles.subtitle}>Re-enter your PIN</Text>{renderPinInputs(true)}<TouchableOpacity style={[styles.button, (pinsToString(confirmPin).length!==4||saving)&&styles.buttonDisabled]} disabled={pinsToString(confirmPin).length!==4||saving} onPress={saveAll}><Text style={styles.buttonText}>{saving? 'Saving...' : 'Finish'}</Text></TouchableOpacity><Text style={styles.progressText}>Step 4 of 4</Text></>) }
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+  {step===1 && (<><Text style={[styles.title, { color: colors.text }]}>Create App PIN</Text><Text style={[styles.subtitle, { color: colors.textSecondary }]}>Set a 4-digit PIN to secure quick access</Text>{renderPinInputs(false)}<TouchableOpacity style={[styles.button, pinsToString(pin).length!==4 && styles.buttonDisabled]} disabled={pinsToString(pin).length!==4} onPress={handleNext}><Text style={styles.buttonText}>Continue</Text></TouchableOpacity><Text style={[styles.progressText, { color: colors.textMuted }]}>Step 3 of 4</Text></>) }
+  {step===2 && (<><Text style={[styles.title, { color: colors.text }]}>Confirm PIN</Text><Text style={[styles.subtitle, { color: colors.textSecondary }]}>Re-enter your PIN</Text>{renderPinInputs(true)}<TouchableOpacity style={[styles.button, (pinsToString(confirmPin).length!==4||saving)&&styles.buttonDisabled]} disabled={pinsToString(confirmPin).length!==4||saving} onPress={saveAll}><Text style={styles.buttonText}>{saving? 'Saving...' : 'Finish'}</Text></TouchableOpacity><Text style={[styles.progressText, { color: colors.textMuted }]}>Step 4 of 4</Text></>) }
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container:{ flex:1, paddingHorizontal:24, paddingTop:80, backgroundColor:'#FFF' },
-  title:{ fontSize:28, fontWeight:'700', marginBottom:8, color:'#222' },
-  subtitle:{ fontSize:16, color:'#666', marginBottom:32 },
+  container:{ flex:1, paddingHorizontal:24, paddingTop:80 },
+  title:{ fontSize:28, fontWeight:'700', marginBottom:8 },
+  subtitle:{ fontSize:16, marginBottom:32 },
   pinRow:{ flexDirection:'row', justifyContent:'space-between', marginBottom:32 },
-  pinInput:{ width:60, height:70, borderWidth:1, borderColor:'#E0E0E0', borderRadius:14, textAlign:'center', fontSize:30, backgroundColor:'#FAFAFA' },
+  pinInput:{ width:60, height:70, borderWidth:1, borderRadius:14, textAlign:'center', fontSize:30 },
   button:{ backgroundColor:'#de6c0fff', paddingVertical:16, borderRadius:12, alignItems:'center', shadowColor:'#de6c0fff', shadowOffset:{ width:0, height:4 }, shadowOpacity:0.3, shadowRadius:8, elevation:6 },
   buttonDisabled:{ backgroundColor:'#fba158ff' },
   buttonText:{ color:'#FFF', fontSize:18, fontWeight:'600' },
-  progressText:{ textAlign:'center', marginTop:32, color:'#999', fontSize:12 },
+  progressText:{ textAlign:'center', marginTop:32, fontSize:12 },
 })

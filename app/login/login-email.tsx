@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { supabase } from '../../src/lib/supabase'
 
 export default function LoginEmailScreen() {
   const router = useRouter()
+  const colors = useThemeColor()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -50,17 +52,18 @@ export default function LoginEmailScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Enter your email to continue</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Welcome back</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Enter your email to continue</Text>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Email Address</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Email Address</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
             value={email}
             onChangeText={setEmail}
             placeholder='you@example.com'
+            placeholderTextColor={colors.textMuted}
             keyboardType='email-address'
             autoCapitalize='none'
             autoComplete='email'
@@ -79,7 +82,7 @@ export default function LoginEmailScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/login/registration')} style={styles.linkContainer}>
-          <Text style={styles.linkText}>New here? Create an account</Text>
+          <Text style={[styles.linkText, { color: colors.primary }]}>New here? Create an account</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -87,15 +90,15 @@ export default function LoginEmailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 80, backgroundColor: '#FFFFFF' },
-  title: { fontSize: 28, fontWeight: '700', marginBottom: 8, color: '#222' },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 32 },
+  container: { flex: 1, paddingHorizontal: 24, paddingTop: 80 },
+  title: { fontSize: 28, fontWeight: '700', marginBottom: 8 },
+  subtitle: { fontSize: 16, marginBottom: 32 },
   formGroup: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: '#444' },
-  input: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 10, padding: 14, fontSize: 16, backgroundColor: '#FAFAFA' },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 8 },
+  input: { borderWidth: 1, borderRadius: 10, padding: 14, fontSize: 16 },
   button: { backgroundColor: '#de6c0fff', paddingVertical: 16, borderRadius: 12, alignItems: 'center', marginTop: 10, shadowColor: '#de6c0fff', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
   buttonDisabled: { backgroundColor: '#f2bb8fff' },
   buttonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
   linkContainer: { marginTop: 16, alignItems: 'center' },
-  linkText: { color: '#de6c0fff', fontSize: 14, fontWeight: '500' },
+  linkText: { fontSize: 14, fontWeight: '500' },
 })

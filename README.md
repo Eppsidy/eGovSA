@@ -32,6 +32,19 @@
   <img src="assets/screenshots/profile.jpg" width="200" alt="Profile">
 </div>
 
+## Version 2
+Cleaner UI and now supports Dark mode
+<div align="center">
+  <img src="assets/screenshots/Home V2.jpg" width="200" alt="Home Screen">
+  <img src="assets/screenshots/Services V2.jpg" width="200" alt="Services">
+  <img src="assets/screenshots/Applications V2.jpg" width="200" alt="Applications">
+  <img src="assets/screenshots/News V2.jpg" width="200" alt="News">
+  <img src="assets/screenshots/Profile V2.jpg" width="200" alt="Profile">
+  <img src="assets/screenshots/Appointments V2.jpg" width="200" alt="Appointments">
+  <img src="assets/screenshots/Login V2.jpg" width="200" alt="Login">
+</div>
+
+
 ### App Screens
 
 - **Home**: Personalized dashboard with quick access to services and notifications

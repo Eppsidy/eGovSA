@@ -3,17 +3,19 @@ import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import {
-  createPaymentMethod,
-  deletePaymentMethod,
-  getUserPaymentMethods,
-  setPaymentMethodAsDefault,
-  updatePaymentMethod,
-  type CreatePaymentMethodRequest,
-  type PaymentMethod
+    createPaymentMethod,
+    deletePaymentMethod,
+    getUserPaymentMethods,
+    setPaymentMethodAsDefault,
+    updatePaymentMethod,
+    type CreatePaymentMethodRequest,
+    type PaymentMethod
 } from '../../src/lib/api'
 
 export default function PaymentMethodsScreen() {
+  const colors = useThemeColor()
   const { user } = useAuth()
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [loading, setLoading] = useState(true)
@@ -170,46 +172,46 @@ export default function PaymentMethodsScreen() {
   }
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header />
       <ScrollView style={styles.content}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Payment Methods</Text>
-            <Text style={styles.subtitle}>Cards & bank accounts</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Payment Methods</Text>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]}>Cards & bank accounts</Text>
           </View>
           <TouchableOpacity style={styles.addButton} onPress={handleAddNew}>
-            <Ionicons name="add-circle" size={28} color="#3b82f6" />
+            <Ionicons name="add-circle" size={28} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3b82f6" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : paymentMethods.length === 0 ? (
-          <View style={styles.card}>
-            <Text style={styles.empty}>No payment methods added yet.</Text>
-            <Text style={styles.smallNote}>Add your card or bank account to pay for government services.</Text>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            <Text style={[styles.empty, { color: colors.text }]}>No payment methods added yet.</Text>
+            <Text style={[styles.smallNote, { color: colors.textSecondary }]}>Add your card or bank account to pay for government services.</Text>
           </View>
         ) : (
           <View style={styles.methodsList}>
             {paymentMethods.map((method) => (
-              <View key={method.id} style={styles.methodCard}>
+              <View key={method.id} style={[styles.methodCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={styles.methodHeader}>
-                  <View style={styles.methodIcon}>
+                  <View style={[styles.methodIcon, { backgroundColor: colors.backgroundSecondary }]}>
                     <Ionicons 
                       name={method.methodType === 'card' ? 'card' : 'wallet'} 
                       size={24} 
-                      color="#3b82f6" 
+                      color={colors.primary} 
                     />
                   </View>
                   <View style={styles.methodInfo}>
-                    <Text style={styles.methodProvider}>{method.provider}</Text>
-                    <Text style={styles.methodDetails}>
+                    <Text style={[styles.methodProvider, { color: colors.text }]}>{method.provider}</Text>
+                    <Text style={[styles.methodDetails, { color: colors.textSecondary }]}>
                       {method.methodType === 'card' ? '••••' : 'Account'} {method.lastFour}
                     </Text>
-                    <Text style={styles.methodExpiry}>Expires {method.expiryDate}</Text>
+                    <Text style={[styles.methodExpiry, { color: colors.textMuted }]}>Expires {method.expiryDate}</Text>
                   </View>
                   {method.isDefault && (
                     <View style={styles.defaultBadge}>
@@ -219,27 +221,27 @@ export default function PaymentMethodsScreen() {
                 </View>
 
                 <View style={styles.methodFooter}>
-                  <Text style={styles.methodCardholder}>{method.cardholderName}</Text>
+                  <Text style={[styles.methodCardholder, { color: colors.textSecondary }]}>{method.cardholderName}</Text>
                   <View style={styles.methodActions}>
                     {!method.isDefault && (
                       <TouchableOpacity 
-                        style={styles.actionButton}
+                        style={[styles.actionButton, { backgroundColor: colors.backgroundSecondary }]}
                         onPress={() => handleSetDefault(method)}
                       >
-                        <Text style={styles.actionButtonText}>Set Default</Text>
+                        <Text style={[styles.actionButtonText, { color: colors.primary }]}>Set Default</Text>
                       </TouchableOpacity>
                     )}
                     <TouchableOpacity 
-                      style={styles.actionButton}
+                      style={[styles.actionButton, { backgroundColor: colors.backgroundSecondary }]}
                       onPress={() => handleEdit(method)}
                     >
-                      <Ionicons name="create-outline" size={18} color="#6b7280" />
+                      <Ionicons name="create-outline" size={18} color={colors.textMuted} />
                     </TouchableOpacity>
                     <TouchableOpacity 
-                      style={styles.actionButton}
+                      style={[styles.actionButton, { backgroundColor: colors.backgroundSecondary }]}
                       onPress={() => handleDelete(method)}
                     >
-                      <Ionicons name="trash-outline" size={18} color="#ef4444" />
+                      <Ionicons name="trash-outline" size={18} color={colors.error} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -257,36 +259,38 @@ export default function PaymentMethodsScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {editingMethod ? 'Edit Payment Method' : 'Add Payment Method'}
               </Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
+                <Ionicons name="close" size={24} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.modalBody}>
               {/* Method Type */}
               <View style={styles.formGroup}>
-                <Text style={styles.label}>Method Type</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Method Type</Text>
                 <View style={styles.methodTypeButtons}>
                   <TouchableOpacity
                     style={[
                       styles.methodTypeButton,
-                      formData.methodType === 'card' && styles.methodTypeButtonActive,
+                      { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+                      formData.methodType === 'card' && { borderColor: colors.primary },
                     ]}
                     onPress={() => setFormData({ ...formData, methodType: 'card' })}
                   >
                     <Ionicons 
                       name="card" 
                       size={20} 
-                      color={formData.methodType === 'card' ? '#3b82f6' : '#6b7280'} 
+                      color={formData.methodType === 'card' ? colors.primary : colors.textMuted} 
                     />
                     <Text style={[
                       styles.methodTypeText,
-                      formData.methodType === 'card' && styles.methodTypeTextActive,
+                      { color: colors.textSecondary },
+                      formData.methodType === 'card' && { color: colors.primary },
                     ]}>
                       Card
                     </Text>
@@ -294,18 +298,20 @@ export default function PaymentMethodsScreen() {
                   <TouchableOpacity
                     style={[
                       styles.methodTypeButton,
-                      formData.methodType === 'bank_account' && styles.methodTypeButtonActive,
+                      { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+                      formData.methodType === 'bank_account' && { borderColor: colors.primary },
                     ]}
                     onPress={() => setFormData({ ...formData, methodType: 'bank_account' })}
                   >
                     <Ionicons 
                       name="wallet" 
                       size={20} 
-                      color={formData.methodType === 'bank_account' ? '#3b82f6' : '#6b7280'} 
+                      color={formData.methodType === 'bank_account' ? colors.primary : colors.textMuted} 
                     />
                     <Text style={[
                       styles.methodTypeText,
-                      formData.methodType === 'bank_account' && styles.methodTypeTextActive,
+                      { color: colors.textSecondary },
+                      formData.methodType === 'bank_account' && { color: colors.primary },
                     ]}>
                       Bank Account
                     </Text>
@@ -315,12 +321,13 @@ export default function PaymentMethodsScreen() {
 
               {/* Provider */}
               <View style={styles.formGroup}>
-                <Text style={styles.label}>
+                <Text style={[styles.label, { color: colors.text }]}>
                   {formData.methodType === 'card' ? 'Card Provider' : 'Bank Name'} *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
                   placeholder={formData.methodType === 'card' ? 'Visa, Mastercard, etc.' : 'FNB, Standard Bank, etc.'}
+                  placeholderTextColor={colors.textMuted}
                   value={formData.provider}
                   onChangeText={(text) => setFormData({ ...formData, provider: text })}
                 />
@@ -328,12 +335,13 @@ export default function PaymentMethodsScreen() {
 
               {/* Cardholder Name */}
               <View style={styles.formGroup}>
-                <Text style={styles.label}>
+                <Text style={[styles.label, { color: colors.text }]}>
                   {formData.methodType === 'card' ? 'Cardholder Name' : 'Account Holder Name'} *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
                   placeholder="Full name as on card/account"
+                  placeholderTextColor={colors.textMuted}
                   value={formData.cardholderName}
                   onChangeText={(text) => setFormData({ ...formData, cardholderName: text })}
                 />
@@ -341,12 +349,13 @@ export default function PaymentMethodsScreen() {
 
               {/* Last Four Digits */}
               <View style={styles.formGroup}>
-                <Text style={styles.label}>
+                <Text style={[styles.label, { color: colors.text }]}>
                   {formData.methodType === 'card' ? 'Last 4 Digits' : 'Last 4 of Account Number'} *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
                   placeholder="1234"
+                  placeholderTextColor={colors.textMuted}
                   value={formData.lastFour}
                   onChangeText={(text) => {
                     const digits = text.replace(/\D/g, '').slice(0, 4)
@@ -359,10 +368,11 @@ export default function PaymentMethodsScreen() {
 
               {/* Expiry Date */}
               <View style={styles.formGroup}>
-                <Text style={styles.label}>Expiry Date (MM/YY) *</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Expiry Date (MM/YY) *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
                   placeholder="12/25"
+                  placeholderTextColor={colors.textMuted}
                   value={formData.expiryDate}
                   onChangeText={(text) => {
                     const formatted = formatExpiryDate(text)
@@ -381,21 +391,21 @@ export default function PaymentMethodsScreen() {
                 <Ionicons
                   name={formData.isDefault ? 'checkbox' : 'square-outline'}
                   size={24}
-                  color="#3b82f6"
+                  color={colors.primary}
                 />
-                <Text style={styles.checkboxLabel}>Set as default payment method</Text>
+                <Text style={[styles.checkboxLabel, { color: colors.text }]}>Set as default payment method</Text>
               </TouchableOpacity>
             </ScrollView>
 
-            <View style={styles.modalFooter}>
+            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <TouchableOpacity
-                style={styles.cancelButton}
+                style={[styles.cancelButton, { backgroundColor: colors.backgroundSecondary }]}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={[styles.cancelButtonText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.submitButton}
+                style={[styles.submitButton, { backgroundColor: colors.primary }]}
                 onPress={handleSubmit}
                 disabled={submitting}
               >
@@ -416,7 +426,7 @@ export default function PaymentMethodsScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1 },
   content: { padding: 16 },
   header: {
     flexDirection: 'row',
@@ -424,8 +434,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#111827' },
-  subtitle: { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  title: { fontSize: 18, fontWeight: '800' },
+  subtitle: { fontSize: 12, marginTop: 2 },
   addButton: {
     padding: 4,
   },
@@ -434,7 +444,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -443,15 +452,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  empty: { fontSize: 14, fontWeight: '700', color: '#1f2937', marginBottom: 6 },
-  smallNote: { fontSize: 12, color: '#6b7280' },
+  empty: { fontSize: 14, fontWeight: '700', marginBottom: 6 },
+  smallNote: { fontSize: 12 },
   methodsList: {
     gap: 12,
   },
   methodCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
+    borderWidth: 1,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 6,
@@ -467,7 +476,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#eff6ff',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -478,17 +486,14 @@ const styles = StyleSheet.create({
   methodProvider: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
     marginBottom: 2,
   },
   methodDetails: {
     fontSize: 14,
-    color: '#6b7280',
     marginBottom: 2,
   },
   methodExpiry: {
     fontSize: 12,
-    color: '#9ca3af',
   },
   defaultBadge: {
     backgroundColor: '#dbeafe',
@@ -506,12 +511,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
     paddingTop: 12,
   },
   methodCardholder: {
     fontSize: 12,
-    color: '#6b7280',
     flex: 1,
   },
   methodActions: {
@@ -521,10 +524,10 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     padding: 4,
+    borderRadius: 6,
   },
   actionButtonText: {
     fontSize: 12,
-    color: '#3b82f6',
     fontWeight: '600',
   },
   // Modal styles
@@ -534,7 +537,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '90%',
@@ -550,7 +552,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
   },
   modalBody: {
     padding: 16,
@@ -561,17 +562,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
-    color: '#111827',
-    backgroundColor: '#fff',
   },
   methodTypeButtons: {
     flexDirection: 'row',
@@ -585,9 +582,7 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#d1d5db',
     borderRadius: 8,
-    backgroundColor: '#fff',
   },
   methodTypeButtonActive: {
     borderColor: '#3b82f6',
@@ -595,7 +590,6 @@ const styles = StyleSheet.create({
   },
   methodTypeText: {
     fontSize: 14,
-    color: '#6b7280',
     fontWeight: '600',
   },
   methodTypeTextActive: {
@@ -609,14 +603,12 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#374151',
   },
   modalFooter: {
     flexDirection: 'row',
     gap: 12,
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
   },
   cancelButton: {
     flex: 1,
@@ -629,13 +621,11 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
   },
   submitButton: {
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    backgroundColor: '#3b82f6',
     alignItems: 'center',
   },
   submitButtonText: {

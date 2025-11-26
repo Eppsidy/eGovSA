@@ -1,15 +1,18 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useCallback, useEffect, useState } from 'react'
-import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { Appointment as AppointmentType, getUserAppointments } from '../../src/lib/api'
 
 export default function AppointmentsScreen() {
+  const colors = useThemeColor()
   const { user } = useAuth()
   const [appointments, setAppointments] = useState<AppointmentType[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [selectedQR, setSelectedQR] = useState<AppointmentType | null>(null)
 
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return
@@ -58,18 +61,18 @@ export default function AppointmentsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.page}>
+      <View style={[styles.page, { backgroundColor: colors.background }]}>
         <Header />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#27AE60" />
-          <Text style={styles.loadingText}>Loading appointments...</Text>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading appointments...</Text>
         </View>
       </View>
     )
   }
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header />
       <ScrollView
         style={styles.content}
@@ -77,29 +80,29 @@ export default function AppointmentsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={['#E67E22']}
-            tintColor="#E67E22"
+            colors={[colors.accent]}
+            tintColor={colors.accent}
           />
         }
       >
-        <Text style={styles.title}>Appointments</Text>
-        <Text style={styles.subtitle}>Scheduled visits</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Appointments</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>Scheduled visits</Text>
         
         {appointments.length === 0 ? (
-          <View style={styles.card}>
-            <Ionicons name="calendar-outline" size={48} color="#ccc" style={{ alignSelf: 'center', marginBottom: 12 }} />
-            <Text style={styles.empty}>No upcoming appointments.</Text>
-            <Text style={styles.smallNote}>Schedule a visit for services like Smart ID, Passport, or testing centers.</Text>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            <Ionicons name="calendar-outline" size={48} color={colors.textMuted} style={{ alignSelf: 'center', marginBottom: 12 }} />
+            <Text style={[styles.empty, { color: colors.text }]}>No upcoming appointments.</Text>
+            <Text style={[styles.smallNote, { color: colors.textSecondary }]}>Schedule a visit for services like Smart ID, Passport, or testing centers.</Text>
           </View>
         ) : (
           appointments.map((appointment) => (
-            <View key={appointment.id} style={styles.appointmentCard}>
+            <View key={appointment.id} style={[styles.appointmentCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.appointmentHeader}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="calendar" size={24} color="#E67E22" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.serviceType}>{appointment.serviceType}</Text>
+                  <Text style={[styles.serviceType, { color: colors.text }]}>{appointment.serviceType}</Text>
                   <View style={styles.statusBadge}>
                     <Text style={styles.statusText}>{appointment.status}</Text>
                   </View>
@@ -108,24 +111,19 @@ export default function AppointmentsScreen() {
 
               <View style={styles.appointmentDetails}>
                 <View style={styles.detailRow}>
-                  <Ionicons name="calendar-outline" size={16} color="#6b7280" />
-                  <Text style={styles.detailText}>{formatDate(appointment.appointmentDate)}</Text>
+                  <Ionicons name="calendar-outline" size={16} color={colors.textMuted} />
+                  <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatDate(appointment.appointmentDate)}</Text>
                 </View>
 
                 <View style={styles.detailRow}>
-                  <Ionicons name="time-outline" size={16} color="#6b7280" />
-                  <Text style={styles.detailText}>{formatTime(appointment.appointmentDate, appointment.appointmentTime)}</Text>
+                  <Ionicons name="time-outline" size={16} color={colors.textMuted} />
+                  <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatTime(appointment.appointmentDate, appointment.appointmentTime)}</Text>
                 </View>
 
                 {appointment.location && (
                   <View style={styles.detailRow}>
-                    <Ionicons name="location-outline" size={16} color="#6b7280" />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.detailText}>{appointment.location}</Text>
-                      {appointment.locationAddress && (
-                        <Text style={styles.addressText}>{appointment.locationAddress}</Text>
-                      )}
-                    </View>
+                    <Ionicons name="location-outline" size={16} color={colors.textMuted} />
+                    <Text style={[styles.detailText, { color: colors.textSecondary }]}>{appointment.location}</Text>
                   </View>
                 )}
 
@@ -135,20 +133,79 @@ export default function AppointmentsScreen() {
                     <Text style={styles.notesText}>{appointment.notes}</Text>
                   </View>
                 )}
+
+                <Pressable 
+                  style={[styles.qrContainer, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}
+                  onPress={() => setSelectedQR(appointment)}
+                >
+                  <View style={[styles.qrPlaceholder, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    <Ionicons name="qr-code-outline" size={60} color={colors.textMuted} />
+                  </View>
+                  <Text style={[styles.qrLabel, { color: colors.textSecondary }]}>Tap to enlarge</Text>
+                  <Text style={[styles.qrId, { color: colors.textMuted }]}>#{appointment.id.slice(0, 8)}</Text>
+                </Pressable>
               </View>
             </View>
           ))
         )}
       </ScrollView>
+
+      {/* QR Code Modal */}
+      <Modal
+        visible={!!selectedQR}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSelectedQR(null)}
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setSelectedQR(null)}
+        >
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Appointment QR Code</Text>
+              <Pressable onPress={() => setSelectedQR(null)}>
+                <Ionicons name="close-circle" size={32} color={colors.textMuted} />
+              </Pressable>
+            </View>
+            
+            {selectedQR && (
+              <View style={styles.qrModalContainer}>
+                <View style={[styles.qrLarge, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                  <Ionicons name="qr-code-outline" size={200} color={colors.text} />
+                </View>
+                <Text style={[styles.modalServiceType, { color: colors.text }]}>{selectedQR.serviceType}</Text>
+                <Text style={[styles.modalAppointmentId, { color: colors.textSecondary }]}>ID: {selectedQR.id}</Text>
+                <View style={styles.modalDetails}>
+                  <Text style={[styles.modalDetailText, { color: colors.textSecondary }]}>
+                    📅 {formatDate(selectedQR.appointmentDate)}
+                  </Text>
+                  <Text style={[styles.modalDetailText, { color: colors.textSecondary }]}>
+                    🕐 {formatTime(selectedQR.appointmentDate, selectedQR.appointmentTime)}
+                  </Text>
+                  {selectedQR.location && (
+                    <Text style={[styles.modalDetailText, { color: colors.textSecondary }]}>
+                      📍 {selectedQR.location}
+                    </Text>
+                  )}
+                </View>
+                <Text style={[styles.modalInstruction, { color: colors.textMuted }]}>
+                  Show this QR code at the office for quick check-in
+                </Text>
+              </View>
+            )}
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1 },
   content: { padding: 16 },
-  title: { fontSize: 18, fontWeight: '800', color: '#111827' },
-  subtitle: { fontSize: 12, color: '#6b7280', marginBottom: 12 },
+  title: { fontSize: 18, fontWeight: '800' },
+  subtitle: { fontSize: 12, marginBottom: 12 },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -158,18 +215,15 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6B7280',
   },
-  card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  empty: { fontSize: 14, fontWeight: '700', color: '#1f2937', marginBottom: 6 },
-  smallNote: { fontSize: 12, color: '#6b7280' },
+  card: { borderRadius: 12, padding: 16, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  empty: { fontSize: 14, fontWeight: '700', marginBottom: 6 },
+  smallNote: { fontSize: 12 },
   appointmentCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -190,10 +244,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  qrContainer: {
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 12,
+  },
+  qrPlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+  },
+  qrLabel: {
+    fontSize: 10,
+    marginTop: 4,
+    fontWeight: '600',
+  },
+  qrId: {
+    fontSize: 9,
+    marginTop: 2,
+    fontFamily: 'monospace',
+  },
   serviceType: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   statusBadge: {
@@ -218,13 +297,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: '#374151',
     flex: 1,
-  },
-  addressText: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 2,
   },
   notesContainer: {
     flexDirection: 'row',
@@ -238,5 +311,65 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#92400E',
     flex: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    borderRadius: 16,
+    width: '100%',
+    maxWidth: 400,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  qrModalContainer: {
+    alignItems: 'center',
+  },
+  qrLarge: {
+    width: 240,
+    height: 240,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderStyle: 'dashed',
+    marginBottom: 16,
+  },
+  modalServiceType: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  modalAppointmentId: {
+    fontSize: 12,
+    fontFamily: 'monospace',
+    marginBottom: 16,
+  },
+  modalDetails: {
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  modalDetailText: {
+    fontSize: 14,
+  },
+  modalInstruction: {
+    fontSize: 13,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: 8,
   },
 })

@@ -5,6 +5,7 @@ import React, { useMemo } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Header from '../../../src/components/Header'
+import { useThemeColor } from '../../../src/hooks/useThemeColor'
 
 // Data model
 export type ServiceCategory = {
@@ -15,7 +16,7 @@ export type ServiceCategory = {
   summary?: string
   url?: string
   icon?: keyof typeof Ionicons.glyphMap
-  items: { key: string; name: string; hint?: string }[]
+  items: { key: string; name: string; hint?: string; isOffline?: boolean }[]
 }
 
 const CATEGORIES: ServiceCategory[] = [
@@ -57,7 +58,7 @@ const CATEGORIES: ServiceCategory[] = [
     url: 'https://www.natis.gov.za',
     items: [
       { key: 'learners-licence-application', name: 'Learner’s Licence Application', hint: '5-7 business days' },
-      { key: 'vehicle-registration', name: 'Vehicle Registration', hint: '3-5 business days' },
+      { key: 'vehicle-registration', name: 'Vehicle Registration', hint: '3-5 business days', isOffline: true },
       { key: 'driving-license-renewal', name: 'Driving License Renewal', hint: '21 business days' },
     ],
   },
@@ -67,43 +68,44 @@ export default function ServicesScreen() {
   const insets = useSafeAreaInsets()
   const containerStyle = useMemo(() => [{ paddingBottom: Math.max(insets.bottom, 16) }], [insets.bottom])
   const router = useRouter()
+  const colors = useThemeColor()
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header/>
-      <ScrollView contentContainerStyle={[styles.container, ...containerStyle]}
+      <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundSecondary }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.screenIntro}>Access official South African government services</Text>
+        <Text style={[styles.screenIntro, { color: colors.textSecondary }]}>Access official South African government services</Text>
         {CATEGORIES.map((cat, idx) => (
-        <View key={cat.key} style={[styles.card, idx > 0 && styles.cardGap]}
+        <View key={cat.key} style={[styles.card, { backgroundColor: colors.card }, idx > 0 && styles.cardGap]}
           accessibilityRole="summary"
           accessibilityLabel={`${cat.title} category`}
         >
           {/* Card Header */}
           <View style={styles.cardHeaderRow}>
-            <View style={styles.appIconBox}>
-              {cat.icon ? <Ionicons name={cat.icon} size={20} color="#E67E22" /> : null}
+            <View style={[styles.appIconBox, { backgroundColor: colors.iconBg }]}>
+              {cat.icon ? <Ionicons name={cat.icon} size={20} color={colors.primary} /> : null}
             </View>
             <View style={{ flex: 1 }}>
               <View style={styles.titleRow}>
-                <Text style={styles.cardTitle}>{cat.title}</Text>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{cat.title}</Text>
                 {cat.status ? (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{cat.status}</Text>
+                  <View style={[styles.badge, { backgroundColor: colors.badgeBg }]}>
+                    <Text style={[styles.badgeText, { color: colors.badgeText }]}>{cat.status}</Text>
                   </View>
                 ) : null}
               </View>
-              {cat.agency ? <Text style={styles.agencyText}>{cat.agency}</Text> : null}
-              {cat.summary ? <Text style={styles.summaryText}>{cat.summary}</Text> : null}
-              {cat.url ? <Text style={styles.mutedLink}>{cat.url}</Text> : null}
+              {cat.agency ? <Text style={[styles.agencyText, { color: colors.textSecondary }]}>{cat.agency}</Text> : null}
+              {cat.summary ? <Text style={[styles.summaryText, { color: colors.textSecondary }]}>{cat.summary}</Text> : null}
+              {cat.url ? <Text style={[styles.mutedLink, { color: colors.textTertiary }]}>{cat.url}</Text> : null}
             </View>
           </View>
 
-          <Text style={styles.sectionLabel}>Available Services:</Text>
+          <Text style={[styles.sectionLabel, { color: colors.text }]}>Available Services:</Text>
 
          {cat.items.map((svc, i) => (
-  <View key={svc.key} style={[styles.serviceRow, i > 0 && styles.serviceRowDivider]}>
+  <View key={svc.key} style={[styles.serviceRow, i > 0 && { borderTopWidth: 1, borderTopColor: colors.borderLight, marginTop: 10, paddingTop: 10 }]}>
               {/* Link wraps a Pressable to get router navigation with RN feedback */}
               <Link href={`/(tabs)/services/${svc.key}` as any} asChild>
                 <Pressable style={({ pressed }) => [styles.linkHit, pressed && styles.linkHitPressed]}
@@ -112,18 +114,27 @@ export default function ServicesScreen() {
                 >
                   {({ pressed }) => (
                     <View style={styles.serviceRowInner}>
-                      <Text style={[styles.serviceLink, pressed && styles.serviceLinkPressed]}>{svc.name}</Text>
+                      <Text style={[styles.serviceLink, { color: colors.accent }, pressed && styles.serviceLinkPressed]}>{svc.name}</Text>
+                      <View style={[
+                        styles.statusDot, 
+                        { 
+                          backgroundColor: svc.isOffline ? colors.statusOffline : colors.statusOnline,
+                          shadowColor: svc.isOffline ? colors.statusOffline : colors.statusOnline
+                        }
+                      ]}>
+                        <View style={styles.statusDotGloss} />
+                      </View>
                     </View>
                   )}
                 </Pressable>
               </Link>
-              {svc.hint ? <Text style={styles.serviceHint}>{svc.hint}</Text> : null}
+              {svc.hint ? <Text style={[styles.serviceHint, { color: colors.textTertiary }]}>{svc.hint}</Text> : null}
             </View>
           ))}
 
           {/* External link button under card */}
           {cat.url ? (
-            <Pressable style={({ pressed }) => [styles.externalBtn, pressed && styles.externalBtnPressed]}
+            <Pressable style={({ pressed }) => [styles.externalBtn, { backgroundColor: colors.primary }, pressed && styles.externalBtnPressed]}
               onPress={() => {
                 const target = cat.url?.startsWith('http') ? cat.url : `https://${cat.url}`
                 if (target) {
@@ -145,20 +156,17 @@ export default function ServicesScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F5F6F8' },
+  page: { flex: 1 },
   container: {
     paddingHorizontal: 16,
     paddingTop: 0,
-    backgroundColor: '#f7f7f8',
   },
   screenIntro: {
     textAlign: 'center',
-    color: '#4b5563',
     marginTop: 12,
     marginBottom: 8,
   },
   card: {
-  backgroundColor: '#ffffff',
   borderRadius: 16,
   padding: 18,
   shadowColor: '#000',
@@ -172,12 +180,11 @@ cardGap: { marginTop: 20 },
 
   cardHeaderRow: { flexDirection: 'row', alignItems: 'flex-start' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardTitle: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
-  agencyText: { marginTop: 2, color: '#64748b', fontSize: 13 },
-  summaryText: { marginTop: 4, color: '#64748b', fontSize: 12 },
-  mutedLink: { marginTop: 6, color: '#6b7280', fontSize: 12 },
+  cardTitle: { fontSize: 18, fontWeight: '700' },
+  agencyText: { marginTop: 2, fontSize: 13 },
+  summaryText: { marginTop: 4, fontSize: 12 },
+  mutedLink: { marginTop: 6, fontSize: 12 },
   badge: { 
-  backgroundColor: '#FFF4E6',
   paddingHorizontal: 10, 
   paddingVertical: 3, 
   borderRadius: 12, 
@@ -186,7 +193,6 @@ cardGap: { marginTop: 20 },
   shadowRadius: 3,
 },
 badgeText: { 
-  color: '#E67E22', 
   fontSize: 12, 
   fontWeight: '700',
 },
@@ -194,32 +200,44 @@ badgeText: {
   width: 44, 
   height: 44, 
   borderRadius: 10, 
-  backgroundColor: '#FFF4E6', 
   marginRight: 12, 
   alignItems: 'center', 
   justifyContent: 'center' 
 },
 
-  sectionLabel: { marginTop: 14, marginBottom: 8, color: '#111827', fontSize: 13, fontWeight: '700' },
+  sectionLabel: { marginTop: 14, marginBottom: 8, fontSize: 13, fontWeight: '700' },
 
   serviceRow: { },
-  serviceRowDivider: {
-  borderTopWidth: 1,
-  borderTopColor: '#f0f0f0',
-  marginTop: 10,
-  paddingTop: 10,
-},
 
   serviceRowGap: { marginTop: 12 },
   linkHit: { paddingVertical: 10, paddingHorizontal: 0 },
   linkHitPressed: { opacity: 0.85 },
-  serviceRowInner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  serviceLink: { color: '#1e48a1ff', fontSize: 16, fontWeight: '600' },
+  serviceRowInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  serviceLink: { fontSize: 16, fontWeight: '600' },
   serviceLinkPressed: { textDecorationLine: 'underline' },
-  serviceHint: { marginTop: 4, color: '#6b7280', fontSize: 12 },
+  serviceHint: { marginTop: 4, fontSize: 12 },
+  statusDot: { 
+    width: 12, 
+    height: 12, 
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  statusDotGloss: {
+    position: 'absolute',
+    top: 2,
+    left: 2,
+    width: 4,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+  },
  externalBtn: {
   marginTop: 16,
-  backgroundColor: '#E67E22',
   borderRadius: 10,
   paddingVertical: 12,
   alignItems: 'center',

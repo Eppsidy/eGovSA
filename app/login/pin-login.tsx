@@ -4,9 +4,11 @@ import * as SecureStore from 'expo-secure-store'
 import React, { useRef, useState } from 'react'
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { supabase } from '../../src/lib/supabase'
 
 export default function PinLoginScreen() {
+  const colors = useThemeColor()
   const [pin, setPin] = useState(['', '', '', ''])
   const inputs = useRef<(TextInput | null)[]>([])
   const { verifyPin, refreshUser } = useAuth()
@@ -73,29 +75,29 @@ export default function PinLoginScreen() {
     }
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Enter PIN</Text>
-      <Text style={styles.subtitle}>Unlock your account</Text>
-      <View style={styles.pinRow}>{pin.map((d,i)=>(<TextInput key={i} ref={el=>{inputs.current[i]=el}} style={styles.pinInput} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i)} onKeyPress={e=>handleKeyPress(e,i)} onSubmitEditing={submit} />))}</View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Enter PIN</Text>
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Unlock your account</Text>
+      <View style={styles.pinRow}>{pin.map((d,i)=>(<TextInput key={i} ref={el=>{inputs.current[i]=el}} style={[styles.pinInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]} keyboardType='number-pad' secureTextEntry maxLength={1} value={d} onChangeText={v=>handleChange(v,i)} onKeyPress={e=>handleKeyPress(e,i)} onSubmitEditing={submit} />))}</View>
       <TouchableOpacity style={[styles.button, pin.join('').length!==4 && styles.buttonDisabled]} disabled={pin.join('').length!==4} onPress={submit}><Text style={styles.buttonText}>Login</Text></TouchableOpacity>
       <TouchableOpacity onPress={() => email ? router.push({ pathname: '/login/pin-recover', params: { email: String(email) } }) : router.push('/login/pin-recover')}>
-        <Text style={styles.helpText}>Forgot PIN?</Text>
+        <Text style={[styles.helpText, { color: colors.textMuted }]}>Forgot PIN?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/login/registration')}>
-        <Text style={[styles.helpText, { marginTop: 12 }]}>Create new account</Text>
+        <Text style={[styles.helpText, { color: colors.textMuted, marginTop: 12 }]}>Create new account</Text>
       </TouchableOpacity>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container:{ flex:1, paddingHorizontal:24, paddingTop:100, backgroundColor:'#FFF' },
-  title:{ fontSize:30, fontWeight:'700', marginBottom:8, color:'#222' },
-  subtitle:{ fontSize:16, color:'#666', marginBottom:40 },
+  container:{ flex:1, paddingHorizontal:24, paddingTop:100 },
+  title:{ fontSize:30, fontWeight:'700', marginBottom:8 },
+  subtitle:{ fontSize:16, marginBottom:40 },
   pinRow:{ flexDirection:'row', justifyContent:'space-between', marginBottom:32 },
-  pinInput:{ width:60, height:70, borderWidth:1, borderColor:'#E0E0E0', borderRadius:14, textAlign:'center', fontSize:30, backgroundColor:'#FAFAFA', color:'#000' },
+  pinInput:{ width:60, height:70, borderWidth:1, borderRadius:14, textAlign:'center', fontSize:30 },
   button:{ backgroundColor:'#de6c0fff', paddingVertical:16, borderRadius:12, alignItems:'center', shadowColor:'#de6c0fff', shadowOffset:{ width:0, height:4 }, shadowOpacity:0.3, shadowRadius:8, elevation:6 },
   buttonDisabled:{ backgroundColor:'#fba158ff' },
   buttonText:{ color:'#FFF', fontSize:18, fontWeight:'600' },
-  helpText:{ textAlign:'center', marginTop:24, color:'#999', fontSize:12 },
+  helpText:{ textAlign:'center', marginTop:24, fontSize:12 },
 })

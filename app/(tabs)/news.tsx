@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../src/components/Header';
+import { useThemeColor } from '../../src/hooks/useThemeColor';
 
 type Article = {
   title: string;
@@ -12,6 +13,7 @@ type Article = {
 };
 
 export default function NewsScreen() {
+  const colors = useThemeColor()
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export default function NewsScreen() {
     <TouchableOpacity
       onPress={() => openUrl(item.url)}
       accessibilityRole="button"
-      style={styles.item}
+      style={[styles.item, { borderColor: colors.border }]}
     >
       <View style={styles.row}>
         <Image
@@ -64,31 +66,31 @@ export default function NewsScreen() {
           accessibilityLabel={item.title ?? 'news thumbnail'}
         />
         <View style={styles.itemContent}>
-          <Text style={styles.title}>{item.title ?? 'Untitled'}</Text>
-          {item.source?.name ? <Text style={styles.source}>{item.source.name}</Text> : null}
-          {item.publishedAt ? <Text style={styles.date}>{new Date(item.publishedAt).toLocaleString()}</Text> : null}
+          <Text style={[styles.title, { color: colors.text }]}>{item.title ?? 'Untitled'}</Text>
+          {item.source?.name ? <Text style={[styles.source, { color: colors.textSecondary }]}>{item.source.name}</Text> : null}
+          {item.publishedAt ? <Text style={[styles.date, { color: colors.textMuted }]}>{new Date(item.publishedAt).toLocaleString()}</Text> : null}
         </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header />
       <View style={styles.content}>
-        <Text style={styles.header}>Latest government news and updates</Text>
+        <Text style={[styles.header, { color: colors.text }]}>Latest government news and updates</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={colors.primary} />
       ) : error ? (
-        <Text style={styles.error}>Error loading news: {error}</Text>
+        <Text style={[styles.error, { color: colors.error }]}>Error loading news: {error}</Text>
       ) : (
         <FlatList
           data={articles}
           keyExtractor={(item, idx) => `${item.title ?? 'item'}-${idx}`}
           renderItem={renderItem}
           contentContainerStyle={articles.length === 0 ? styles.emptyContainer : undefined}
-          ListEmptyComponent={<Text style={styles.empty}>No headlines available.</Text>}
+          ListEmptyComponent={<Text style={[styles.empty, { color: colors.textSecondary }]}>No headlines available.</Text>}
         />
       )}
       </View>
@@ -97,16 +99,16 @@ export default function NewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#fff' },
+  page: { flex: 1 },
   content: { flex: 1, padding: 16 },
-  header: { color: '#111', fontWeight: '600', fontSize: 18, marginBottom: 12 },
-  item: { paddingVertical: 12, borderBottomWidth: 1, borderColor: '#eee' },
-  title: { fontSize: 16, color: '#111', fontWeight: '500' },
-  source: { fontSize: 12, color: '#666', marginTop: 4 },
-  date: { fontSize: 11, color: '#999', marginTop: 2 },
-  text: { color: '#111', fontWeight: '600' },
-  error: { color: 'red' },
-  empty: { color: '#666', textAlign: 'center', marginTop: 20 },
+  header: { fontWeight: '600', fontSize: 18, marginBottom: 12 },
+  item: { paddingVertical: 12, borderBottomWidth: 1 },
+  title: { fontSize: 16, fontWeight: '500' },
+  source: { fontSize: 12, marginTop: 4 },
+  date: { fontSize: 11, marginTop: 2 },
+  text: { fontWeight: '600' },
+  error: {},
+  empty: { textAlign: 'center', marginTop: 20 },
   emptyContainer: { flex: 1, justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center' },
   thumbnail: { width: 88, height: 64, borderRadius: 6, marginRight: 12, backgroundColor: '#f0f0f0' },

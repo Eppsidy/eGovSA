@@ -4,10 +4,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native'
 import Header from '../../src/components/Header'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 import { fetchProfile, registerPushToken, updateNotificationSettings } from '../../src/lib/api'
 import { checkNotificationPermissions, registerForPushNotificationsAsync } from '../../src/lib/pushNotifications'
 
 export default function ProfileScreen() {
+  const colors = useThemeColor()
   const { user, signOut, refreshUser } = useAuth()
   const router = useRouter()
   const [notificationsEnabled, setNotificationsEnabled] = useState(false)
@@ -170,7 +172,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header />
 
       <ScrollView 
@@ -180,19 +182,19 @@ export default function ProfileScreen() {
           <RefreshControl 
             refreshing={refreshing} 
             onRefresh={onRefresh}
-            tintColor="#E67E22"
-            colors={["#E67E22"]}
+            tintColor={colors.accent}
+            colors={[colors.accent]}
           />
         }
       >
         {/* Profile header card */}
-        <View style={styles.cardProfile}>
+        <View style={[styles.cardProfile, { backgroundColor: colors.card }]}>
           <View style={styles.avatar}>
             <Ionicons name="person" size={26} color="#fff" />
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={styles.name}>{fullName}</Text>
+              <Text style={[styles.name, { color: colors.text }]}>{fullName}</Text>
             </View>
             <View style={{ marginTop: 8, gap: 4 }}>
               {idNumber && <DetailRow icon="card-outline" label={`ID: ${idNumber}`} />}
@@ -207,42 +209,44 @@ export default function ProfileScreen() {
         </View>
 
         {/* Account */}
-        <SectionTitle title="Account" />
-        <View style={styles.cardList}>
+        <SectionTitle title="Account" colors={colors} />
+        <View style={[styles.cardList, { backgroundColor: colors.card }]}>
           <ListItem
             icon="person-circle-outline"
             title="Personal Information"
             subtitle="Update your details"
             onPress={() => router.push('profile/personal-info' as any)}
+            colors={colors}
           />
           <ListItem
             icon="notifications-outline"
             title="Notifications"
             subtitle={notificationsEnabled ? 'Push notifications enabled' : 'Push notifications disabled'}
+            colors={colors}
             right={() => (
               <Switch
                 value={notificationsEnabled}
                 onValueChange={handleNotificationToggle}
                 disabled={updatingNotifications}
-                trackColor={{ false: '#e5e7eb', true: '#f2dfc7ff' }}
-                thumbColor={notificationsEnabled ? '#E67E22' : '#9ca3af'}
+                trackColor={{ false: colors.border, true: '#f2dfc7ff' }}
+                thumbColor={notificationsEnabled ? colors.accent : colors.textMuted}
               />
             )}
           />
         </View>
 
         {/* Services */}
-        <SectionTitle title="Services" />
-        <View style={styles.cardList}>
-          <ListItem icon="card-outline" title="Payment Methods" subtitle="Cards & bank accounts" onPress={() => router.push('/profile/payment-methods' as any)} />
-          <ListItem icon="calendar-outline" title="Appointments" subtitle="Scheduled visits" onPress={() => router.push('/profile/appointments' as any)} />
+        <SectionTitle title="Services" colors={colors} />
+        <View style={[styles.cardList, { backgroundColor: colors.card }]}>
+          <ListItem icon="card-outline" title="Payment Methods" subtitle="Cards & bank accounts" onPress={() => router.push('/profile/payment-methods' as any)} colors={colors} />
+          <ListItem icon="calendar-outline" title="Appointments" subtitle="Scheduled visits" onPress={() => router.push('/profile/appointments' as any)} colors={colors} />
         </View>
 
         {/* Support */}
-        <SectionTitle title="Support" />
-        <View style={styles.cardList}>
-          <ListItem icon="help-circle-outline" title="Help Center" subtitle="FAQs and guides" onPress={() => router.push('/profile/help-center' as any)} />
-          <ListItem icon="document-text-outline" title="Terms & Privacy" subtitle="Legal information" onPress={() => router.push('/profile/terms-privacy' as any)} />
+        <SectionTitle title="Support" colors={colors} />
+        <View style={[styles.cardList, { backgroundColor: colors.card }]}>
+          <ListItem icon="help-circle-outline" title="Help Center" subtitle="FAQs and guides" onPress={() => router.push('/profile/help-center' as any)} colors={colors} />
+          <ListItem icon="document-text-outline" title="Terms & Privacy" subtitle="Legal information" onPress={() => router.push('/profile/terms-privacy' as any)} colors={colors} />
         </View>
 
         {/* Footer */}
@@ -255,15 +259,16 @@ export default function ProfileScreen() {
   )
 }
 
-function SectionTitle({ title }: { title: string }) {
-  return <Text style={styles.sectionTitle}>{title}</Text>
+function SectionTitle({ title, colors }: { title: string; colors: any }) {
+  return <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>{title}</Text>
 }
 
 function DetailRow({ icon, label }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string }) {
+  const colors = useThemeColor()
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <Ionicons name={icon} size={14} color="#64748b" />
-      <Text style={styles.detailText}>{label}</Text>
+      <Ionicons name={icon} size={14} color={colors.textMuted} />
+      <Text style={[styles.detailText, { color: colors.textSecondary }]}>{label}</Text>
     </View>
   )
 }
@@ -274,26 +279,28 @@ function ListItem({
   subtitle,
   onPress,
   right,
+  colors,
 }: {
   icon: React.ComponentProps<typeof Ionicons>['name']
   title: string
   subtitle?: string
   onPress?: () => void
   right?: () => React.ReactNode
+  colors: any
 }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.itemRow, pressed && { opacity: 0.9 }]}>
-      <View style={styles.itemLeftIcon}>
-        <Ionicons name={icon} size={18} color="#1f2937" />
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.itemRow, { borderBottomColor: colors.border }, pressed && { opacity: 0.9 }]}>
+      <View style={[styles.itemLeftIcon, { backgroundColor: colors.backgroundSecondary }]}>
+        <Ionicons name={icon} size={18} color={colors.text} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={styles.itemTitle}>{title}</Text>
-        {!!subtitle && <Text style={styles.itemSubtitle}>{subtitle}</Text>}
+        <Text style={[styles.itemTitle, { color: colors.text }]}>{title}</Text>
+        {!!subtitle && <Text style={[styles.itemSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       </View>
       {right ? (
         right()
       ) : (
-        <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
+        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
       )}
     </Pressable>
   )
@@ -308,13 +315,12 @@ const cardShadow = {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#f6f8fb' },
+  page: { flex: 1 },
 
-  sectionTitle: { marginTop: 12, marginHorizontal: 16, marginBottom: 8, fontSize: 12, fontWeight: '800', color: '#6b7280' },
+  sectionTitle: { marginTop: 12, marginHorizontal: 16, marginBottom: 8, fontSize: 12, fontWeight: '800' },
 
   cardProfile: {
   margin: 16,
-  backgroundColor: '#fff',
   borderRadius: 16,
   padding: 16,
   flexDirection: 'row',
@@ -324,7 +330,7 @@ const styles = StyleSheet.create({
 },
 
   avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#1A2B4A', alignItems: 'center', justifyContent: 'center' },
-  name: { fontSize: 17, fontWeight: '800', color: '#111827' },
+  name: { fontSize: 17, fontWeight: '800' },
   
   verifiedPill: {
   flexDirection: 'row',
@@ -341,34 +347,30 @@ verifiedText: {
   fontWeight: '700',
   letterSpacing: 0.2,
 },
-  detailText: { fontSize: 12, color: '#475569' },
+  detailText: { fontSize: 12 },
 
-  cardList: { marginHorizontal: 16, backgroundColor: '#fff', borderRadius: 14, overflow: 'hidden', ...cardShadow },
+  cardList: { marginHorizontal: 16, borderRadius: 14, overflow: 'hidden', ...cardShadow },
  itemRow: {
   flexDirection: 'row',
   alignItems: 'center',
   gap: 12,
   paddingHorizontal: 16,
   paddingVertical: 14,
-  borderBottomColor: '#f1f5f9',
   borderBottomWidth: StyleSheet.hairlineWidth,
 },
 itemLeftIcon: {
   width: 32,
   height: 32,
   borderRadius: 16,
-  backgroundColor: '#f9fafb',
   alignItems: 'center',
   justifyContent: 'center',
 },
 itemTitle: {
   fontSize: 14,
   fontWeight: '700',
-  color: '#1e293b',
 },
 itemSubtitle: {
   fontSize: 11,
-  color: '#6b7280',
   marginTop: 1,
 },
 

@@ -1,21 +1,23 @@
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import Header from '../../src/components/Header'
+import { useThemeColor } from '../../src/hooks/useThemeColor'
 
 export default function HelpCenterScreen() {
+ const colors = useThemeColor()
  return (
-    <View style={styles.page}>
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
       <Header />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Help Center</Text>
-        <Text style={styles.subtitle}>FAQs and guides</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Help Center</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>FAQs and guides</Text>
         
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
           {/* GETTING STARTED */}
-          <Text style={styles.sectionHeader}>Getting Started</Text>
+          <Text style={[styles.sectionHeader, { color: colors.text }]}>Getting Started</Text>
           
-          <Text style={styles.question}>How do I register for eGov SA?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I register for eGov SA?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Download the eGov SA app from Google Play or Apple App Store{'\n'}
             2. Tap "Sign Up" on the welcome screen{'\n'}
             3. Enter your ID number, phone number, and email address{'\n'}
@@ -25,8 +27,8 @@ export default function HelpCenterScreen() {
             7. Wait for account approval (usually 24-48 hours)
           </Text>
 
-          <Text style={styles.question}>How do I verify my account?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I verify my account?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             After registration, you'll need to:{'\n'}
             • Upload a clear photo of your ID document (both sides){'\n'}
             • Take a selfie for facial recognition{'\n'}
@@ -35,8 +37,8 @@ export default function HelpCenterScreen() {
             • Wait for our team to review and approve your account
           </Text>
 
-          <Text style={styles.question}>I forgot my password. How do I reset it?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>I forgot my password. How do I reset it?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. On the login screen, tap "Forgot Password"{'\n'}
             2. Enter your registered email address or phone number{'\n'}
             3. Check your email/SMS for a reset code{'\n'}
@@ -46,10 +48,10 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* EHOMEAFFAIRS */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>eHomeAffairs Services</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>eHomeAffairs Services</Text>
           
-          <Text style={styles.question}>How do I apply for a Smart ID Card?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I apply for a Smart ID Card?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eHomeAffairs → Smart ID Application{'\n'}
             2. Verify your personal details are correct{'\n'}
             3. Upload a recent passport-sized photo (white background){'\n'}
@@ -59,16 +61,16 @@ export default function HelpCenterScreen() {
             7. Visit the selected office on your appointment date
           </Text>
 
-          <Text style={styles.question}>How do I track my ID application?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I track my ID application?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Applications → My Applications{'\n'}
             2. Select your ID application{'\n'}
             3. View the current status and estimated completion date{'\n'}
             4. You'll receive push notifications for status updates
           </Text>
 
-          <Text style={styles.question}>How do I apply for a birth certificate?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I apply for a birth certificate?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eHomeAffairs → Birth Certificate{'\n'}
             2. Select "For Myself" or "For Dependent"{'\n'}
             3. Enter required details (name, date of birth, place of birth, parents' details){'\n'}
@@ -79,10 +81,10 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* ENATIS */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>eNatis Services</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>eNatis Services</Text>
           
-          <Text style={styles.question}>How do I renew my driver's license?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I renew my driver's license?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eNatis → License Renewal{'\n'}
             2. Verify your license details{'\n'}
             3. Complete the online eye test (if eligible){'\n'}
@@ -93,14 +95,14 @@ export default function HelpCenterScreen() {
             8. Collect your license card within 14 days
           </Text>
 
-          <Text style={styles.question}>When should I renew my license?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>When should I renew my license?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             You can renew your license up to 60 days before expiry. After expiry, you have a 24-month 
             grace period, but you cannot drive with an expired license.
           </Text>
 
-          <Text style={styles.question}>How do I pay traffic fines?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I pay traffic fines?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eNatis → Traffic Fines{'\n'}
             2. Enter your ID number or license disk number{'\n'}
             3. View all outstanding fines{'\n'}
@@ -111,8 +113,8 @@ export default function HelpCenterScreen() {
             8. Fines update within 48 hours on the system
           </Text>
 
-          <Text style={styles.question}>Can I renew my vehicle license online?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Can I renew my vehicle license online?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             Yes! If:{'\n'}
             • Your vehicle is registered in your name{'\n'}
             • You have no outstanding fines or traffic offenses{'\n'}
@@ -129,10 +131,10 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* EFILING */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>eFiling (SARS) Services</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>eFiling (SARS) Services</Text>
           
-          <Text style={styles.question}>How do I submit my tax return?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I submit my tax return?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eFiling → Submit Tax Return{'\n'}
             2. Log in with your SARS credentials (or link your account first){'\n'}
             3. Select the tax year{'\n'}
@@ -143,8 +145,8 @@ export default function HelpCenterScreen() {
             8. Save your proof of submission
           </Text>
 
-          <Text style={styles.question}>How do I check my tax refund status?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I check my tax refund status?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Services → eFiling → Refund Status{'\n'}
             2. Log in to your SARS profile{'\n'}
             3. View your refund status and estimated payment date{'\n'}
@@ -152,18 +154,18 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* PAYMENTS */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>Payments & Transactions</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>Payments & Transactions</Text>
           
-          <Text style={styles.question}>What payment methods are accepted?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>What payment methods are accepted?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Credit/Debit cards (Visa, Mastercard){'\n'}
             • Instant EFT (bank transfers){'\n'}
             • SnapScan & Zapper{'\n'}
             • Government account payments (for registered entities)
           </Text>
 
-          <Text style={styles.question}>Is it safe to pay through the app?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Is it safe to pay through the app?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             Yes! We use:{'\n'}
             • 256-bit SSL encryption{'\n'}
             • PCI DSS compliant payment gateways{'\n'}
@@ -171,8 +173,8 @@ export default function HelpCenterScreen() {
             • 3D Secure authentication for all transactions
           </Text>
 
-          <Text style={styles.question}>I made a payment, but my application is still pending</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>I made a payment, but my application is still pending</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Most payments reflect within 24 hours{'\n'}
             • Government processing times vary (typically 3-5 working days){'\n'}
             • Check your spam folder for payment confirmation emails{'\n'}
@@ -181,10 +183,10 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* TECHNICAL SUPPORT */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>Technical Support</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>Technical Support</Text>
           
-          <Text style={styles.question}>The app is not loading or keeps crashing</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>The app is not loading or keeps crashing</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             Try these steps:{'\n'}
             1. Check your internet connection{'\n'}
             2. Close and restart the app{'\n'}
@@ -194,8 +196,8 @@ export default function HelpCenterScreen() {
             6. Uninstall and reinstall the app (your data is saved in the cloud)
           </Text>
 
-          <Text style={styles.question}>I can't upload my documents</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>I can't upload my documents</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Ensure files are in supported formats: PDF, JPG, PNG (max 5MB per file){'\n'}
             • Check your internet connection{'\n'}
             • Try compressing large files{'\n'}
@@ -203,8 +205,8 @@ export default function HelpCenterScreen() {
             • Take clear, well-lit photos of documents
           </Text>
 
-          <Text style={styles.question}>Supported devices and operating systems</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Supported devices and operating systems</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Android: Version 8.0 (Oreo) and above{'\n'}
             • iOS: Version 13.0 and above{'\n'}
             • Tablets are supported{'\n'}
@@ -212,10 +214,10 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* ACCOUNT & SECURITY */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>Account & Security</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>Account & Security</Text>
           
-          <Text style={styles.question}>How do I enable two-factor authentication?</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>How do I enable two-factor authentication?</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             1. Go to Profile → Personal Information → Security Settings{'\n'}
             2. Toggle on "Two-Factor Authentication"{'\n'}
             3. Choose your preferred method (SMS or email){'\n'}
@@ -223,8 +225,8 @@ export default function HelpCenterScreen() {
             5. You'll now need to enter a code each time you log in from a new device
           </Text>
 
-          <Text style={styles.question}>I think my account has been compromised</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>I think my account has been compromised</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             Immediately:{'\n'}
             1. Change your password{'\n'}
             2. Enable two-factor authentication{'\n'}
@@ -234,26 +236,26 @@ export default function HelpCenterScreen() {
           </Text>
 
           {/* CONTACT US */}
-          <Text style={[styles.sectionHeader, styles.sectionMargin]}>Contact Us</Text>
+          <Text style={[styles.sectionHeader, styles.sectionMargin, { color: colors.text }]}>Contact Us</Text>
           
-          <Text style={styles.question}>Customer Support</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Customer Support</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Email: support@egovsa.gov.za{'\n'}
             • Phone: 0800 123 456 (Monday-Friday, 8AM-5PM){'\n'}
             • WhatsApp: 079 123 4567{'\n'}
             • Live Chat: Available in-app (9AM-5PM)
           </Text>
 
-          <Text style={styles.question}>Response Times</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Response Times</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             • Live Chat: Immediate to 5 minutes{'\n'}
             • Phone: Immediate during business hours{'\n'}
             • Email: 24-48 hours{'\n'}
             • WhatsApp: Within 2 hours during business hours
           </Text>
 
-          <Text style={styles.question}>Specific Department Contacts</Text>
-          <Text style={styles.answer}>
+          <Text style={[styles.question, { color: colors.text }]}>Specific Department Contacts</Text>
+          <Text style={[styles.answer, { color: colors.textSecondary }]}>
             Home Affairs:{'\n'}
             • Phone: 0800 60 11 90{'\n'}
             • Website: www.dha.gov.za{'\n\n'}
@@ -267,7 +269,7 @@ export default function HelpCenterScreen() {
             • Website: www.sars.gov.za
           </Text>
 
-          <Text style={[styles.answer, styles.footerText]}>
+          <Text style={[styles.answer, styles.footerText, { color: colors.text }]}>
             Still need help? Contact our support team – we're here to assist you!
           </Text>
         </View>
@@ -278,8 +280,7 @@ export default function HelpCenterScreen() {
 
 const styles = StyleSheet.create({
   page: { 
-    flex: 1, 
-    backgroundColor: '#f6f8fb'
+    flex: 1
   },
   content: { 
     padding: 16,
@@ -287,17 +288,14 @@ const styles = StyleSheet.create({
   },
   title: { 
     fontSize: 18, 
-    fontWeight: '800', 
-    color: '#111827',
+    fontWeight: '800',
     marginBottom: 4
   },
   subtitle: { 
-    fontSize: 12, 
-    color: '#6b7280', 
+    fontSize: 12,
     marginBottom: 12 
   },
   card: { 
-    backgroundColor: '#fff', 
     borderRadius: 12, 
     padding: 16, 
     shadowColor: '#000', 
@@ -309,7 +307,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1f2937',
     marginBottom: 16,
     marginTop: 8
   },
@@ -319,20 +316,17 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
     marginTop: 16,
     marginBottom: 8
   },
   answer: { 
-    fontSize: 13, 
-    color: '#4b5563',
+    fontSize: 13,
     lineHeight: 20,
     marginBottom: 12
   },
   footerText: {
     marginTop: 20,
     fontWeight: '600',
-    textAlign: 'center',
-    color: '#1f2937'
+    textAlign: 'center'
   }
 })
