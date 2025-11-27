@@ -14,7 +14,7 @@ export default function GetStartedScreen() {
           <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>Welcome to</Text>
           <Text style={[styles.appTitle, { color: colors.primary }]}>eGovSA</Text>
           <Image
-                      source={require('../../assets/images/splash.jpg')}
+                      source={require('../../assets/images/splash.png')}
                       resizeMode="contain"
                       style={styles.logoImage}
                     />
